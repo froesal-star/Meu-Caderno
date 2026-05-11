@@ -14,56 +14,25 @@
 }
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
 
-/* ── OVERLAYS ── */
-.ov{display:none;position:fixed;inset:0;z-index:900;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
-.ov.open{display:flex}
-#ov-setup{background:#0d1117}
-
-.card{background:#fff;border-radius:16px;padding:30px;max-width:500px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.4)}
-.card h2{font-size:1.15rem;margin-bottom:6px}
-.card .sub{font-size:.84rem;color:var(--mut);margin-bottom:20px;line-height:1.65}
-
-.repo-badge{display:flex;align-items:center;gap:10px;padding:12px 15px;background:#f6f8fa;border:1.5px solid #d0d7de;border-radius:9px;margin-bottom:18px;font-size:.88rem}
-.repo-badge .rb-icon{font-size:1.2rem}
-.repo-badge strong{color:#0969da}
-.repo-badge .rb-change{margin-left:auto;background:none;border:none;color:var(--mut);font-size:.75rem;cursor:pointer;text-decoration:underline}
-
-.steps{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
-.step{display:flex;gap:12px;padding:12px;background:var(--surf2);border:1.5px solid var(--brd);border-radius:10px}
-.sn{flex-shrink:0;width:24px;height:24px;background:var(--acc);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem}
-.sb{font-size:.83rem;line-height:1.65;flex:1}
-.sb strong{color:var(--acc)}
-.sb code{background:#f0f0ee;padding:1px 5px;border-radius:4px;font-family:monospace;font-size:.79rem;color:var(--red)}
-
-.sform{display:flex;flex-direction:column;gap:10px}
-.sf label{font-size:.72rem;font-weight:700;color:var(--mut);display:block;margin-bottom:3px}
-.sf input{width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:8px;font-size:.87rem;outline:none;font-family:monospace;transition:border .15s}
-.sf input:focus{border-color:var(--acc)}
-.sf input.ok{border-color:#6dbf8a;background:#f5fff8}
-#setup-err{font-size:.8rem;color:var(--red);min-height:18px}
-
-/* ── APP ── */
 .app{display:flex;flex-direction:column;height:100vh;max-width:1100px;margin:0 auto;padding:16px;gap:12px}
+
 .aph{display:flex;align-items:center;gap:12px;flex-shrink:0;flex-wrap:wrap}
 .logo{width:38px;height:38px;background:var(--acc);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
 .aph h1{font-size:1.2rem;font-weight:700}
-.hr{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-#synclbl{font-size:.75rem;font-weight:600}
-.bcfg{background:none;border:1.5px solid var(--brd);color:var(--mut);border-radius:8px;padding:5px 11px;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .15s}
-.bcfg:hover{border-color:var(--acc);color:var(--acc)}
+.aph p{font-size:.73rem;color:var(--mut)}
 
-/* tabs */
 .tnav{display:flex;gap:4px;background:var(--brd);border-radius:var(--r) var(--r) 0 0;padding:4px 4px 0;flex-shrink:0}
 .tbtn{flex:1;padding:10px 12px;border:none;background:transparent;border-radius:8px 8px 0 0;font-size:.87rem;font-weight:600;color:var(--mut);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:6px}
 .tbtn:hover{background:rgba(255,255,255,.6);color:var(--txt)}
 .tbtn.active{background:var(--surf);color:var(--acc)}
+
 .tpanels{flex:1;background:var(--surf);border-radius:0 0 var(--r) var(--r);border:1px solid var(--brd);border-top:none;box-shadow:var(--sh);overflow:hidden;display:flex;flex-direction:column;min-height:0}
 .tp{display:none;flex:1;min-height:0;overflow:hidden}
 .tp.active{display:flex;flex-direction:column}
 
-/* notes */
+/* ── NOTAS ── */
 .nl{display:flex;flex:1;min-height:0;overflow:hidden}
-.sb2{width:var(--sw);min-width:var(--sw);border-right:1.5px solid var(--brd);display:flex;flex-direction:column;background:var(--surf2);overflow:hidden}
+.sidebar{width:var(--sw);min-width:var(--sw);border-right:1.5px solid var(--brd);display:flex;flex-direction:column;background:var(--surf2);overflow:hidden}
 .sbh{padding:13px 13px 10px;border-bottom:1px solid var(--brd);flex-shrink:0}
 .sbh h3{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin-bottom:9px}
 .nff{display:flex;gap:6px}
@@ -71,58 +40,40 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .nff input:focus{border-color:var(--acc)}
 .nff button{padding:7px 10px;background:var(--acc);color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:.9rem;font-weight:700}
 .nff button:hover{background:var(--acch)}
-.fl{flex:1;overflow-y:auto;padding:8px}
+.flist{flex:1;overflow-y:auto;padding:8px}
+
 .fi{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:.87rem;font-weight:500;transition:background .14s}
 .fi:hover{background:#ede9e3}
 .fi.active{background:var(--accl);color:var(--acc);font-weight:700}
-.fic{font-size:1rem;flex-shrink:0}
-.fn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fc2{font-size:.68rem;background:var(--brd);border-radius:10px;padding:1px 6px;color:var(--mut);flex-shrink:0}
-.fi.active .fc2{background:#c8e6d4;color:var(--acc)}
-.fd{display:none;background:none;border:none;cursor:pointer;color:var(--mut);font-size:11px;padding:2px 4px;border-radius:4px;flex-shrink:0}
-.fd:hover{color:var(--red);background:#fdecea}
-.fi:hover .fd{display:inline-flex}
+.fi .icon{font-size:1rem;flex-shrink:0}
+.fi .fname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fi .fcnt{font-size:.68rem;background:var(--brd);border-radius:10px;padding:1px 6px;color:var(--mut);flex-shrink:0}
+.fi.active .fcnt{background:#c8e6d4;color:var(--acc)}
+.fdel{display:none;background:none;border:none;cursor:pointer;color:var(--mut);font-size:11px;padding:2px 4px;border-radius:4px;flex-shrink:0}
+.fdel:hover{color:var(--red);background:#fdecea}
+.fi:hover .fdel{display:inline-flex}
 
-.np{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
-.nph2{padding:12px 18px;border-bottom:1px solid var(--brd);display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0;background:#fff;min-height:56px}
-.nph2 h2{font-size:.93rem;font-weight:700;flex:1;min-width:80px}
+.npanel{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.nph{padding:12px 18px;border-bottom:1px solid var(--brd);display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0;background:#fff;min-height:56px}
+.nph h2{font-size:.93rem;font-weight:700;flex:1;min-width:80px}
 .ha{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
-.nb2{flex:1;overflow-y:auto;padding:16px 20px}
+.nbody{flex:1;overflow-y:auto;padding:16px 20px}
 
 .ne{border:1.5px solid var(--brd);border-radius:var(--r);margin-bottom:13px;background:var(--surf2);overflow:hidden}
 .ne:hover{box-shadow:0 3px 14px rgba(0,0,0,.08)}
 .neh{display:flex;align-items:center;gap:9px;padding:10px 13px;background:var(--accl);border-bottom:1.5px solid var(--brd);cursor:pointer;user-select:none}
-.neh .dl{font-weight:700;font-size:.84rem;color:var(--acc);flex:1}
-.neh .pv{font-size:.76rem;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}
-.neh .cv{font-size:.7rem;color:var(--mut);transition:transform .2s}
-.ne.col .cv{transform:rotate(-90deg)}
-.ne.col .neb{display:none}
-.neb{padding:13px}
+.neh .dlbl{font-weight:700;font-size:.84rem;color:var(--acc);flex:1}
+.neh .prev{font-size:.76rem;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}
+.neh .chev{font-size:.7rem;color:var(--mut);transition:transform .2s}
+.ne.col .chev{transform:rotate(-90deg)}
+.ne.col .nebody{display:none}
+.nebody{padding:13px}
 textarea.nta{width:100%;min-height:115px;border:1.5px solid var(--brd);border-radius:8px;padding:11px;font-size:.9rem;font-family:inherit;line-height:1.65;background:#fff;color:var(--txt);resize:vertical;outline:none;transition:border .15s}
 textarea.nta:focus{border-color:var(--acc)}
-.nef{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.nef{margin-top:8px}
 .asl{font-size:.73rem;color:var(--mut)}
 
-/* empty */
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;color:var(--mut);height:100%}
-.empty .ei{font-size:2.6rem;margin-bottom:13px}
-.empty p{font-size:.88rem;line-height:1.6}
-
-/* btns */
-.btn{padding:8px 16px;border:none;border-radius:8px;font-size:.83rem;font-weight:600;cursor:pointer;transition:background .15s,transform .1s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
-.btn:active{transform:scale(.97)}
-.bp{background:var(--acc);color:#fff}
-.bp:hover{background:var(--acch)}
-.bp:disabled{background:#bbb;cursor:default}
-.bo{background:transparent;color:var(--acc);border:1.5px solid var(--acc)}
-.bo:hover{background:var(--accl)}
-.bd{background:#fdecea;color:var(--red);border:1.5px solid #f5c6c0}
-.bd:hover{background:#f9d4d0}
-.bsm{padding:5px 10px;font-size:.77rem}
-.fin{padding:7px 12px;border:1.5px solid var(--brd);border-radius:8px;font-size:.82rem;background:var(--surf2);color:var(--txt);outline:none}
-.fin:focus{border-color:var(--acc)}
-
-/* actions */
+/* ── AÇÕES ── */
 .ati{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:20px 24px;gap:14px}
 .atb{display:flex;gap:11px;align-items:flex-end;flex-wrap:wrap;flex-shrink:0}
 .fg{display:flex;flex-direction:column;gap:4px}
@@ -135,7 +86,8 @@ textarea.nta:focus{border-color:var(--acc)}
 .st span{color:var(--mut);font-weight:400}
 .ascr{flex:1;overflow-y:auto}
 .alist{display:flex;flex-direction:column;gap:9px}
-.ai{display:flex;align-items:flex-start;gap:12px;padding:13px 14px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--surf2);transition:box-shadow .14s}
+
+.ai{display:flex;align-items:flex-start;gap:12px;padding:13px 14px;border:1.5px solid var(--brd);border-radius:var(--r);background:var(--surf2)}
 .ai:hover{box-shadow:0 2px 10px rgba(0,0,0,.07)}
 .ai.done{background:#f8f8f6;border-color:#d8d8d2;opacity:.72}
 .ack{flex-shrink:0;width:22px;height:22px;border:2px solid var(--brd);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;background:#fff;color:transparent;transition:all .15s;margin-top:1px}
@@ -149,12 +101,30 @@ textarea.nta:focus{border-color:var(--acc)}
 .mb.due{color:var(--ylw)}
 .mb.ov{color:var(--red);font-weight:700}
 .mb.dn{color:var(--acc)}
-.adel{flex-shrink:0;background:none;border:none;cursor:pointer;color:#ccc;font-size:14px;padding:2px 4px;border-radius:5px;transition:color .14s,background .14s}
+.adel{flex-shrink:0;background:none;border:none;cursor:pointer;color:#ccc;font-size:14px;padding:2px 4px;border-radius:5px}
 .adel:hover{color:var(--red);background:#fdecea}
 .sdiv{text-align:center;font-size:.74rem;color:var(--mut);margin:13px 0 9px;display:flex;align-items:center;gap:9px}
 .sdiv::before,.sdiv::after{content:'';flex:1;height:1px;background:var(--brd)}
 
-/* modal */
+/* ── BOTÕES ── */
+.btn{padding:8px 16px;border:none;border-radius:8px;font-size:.83rem;font-weight:600;cursor:pointer;transition:background .15s,transform .1s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.bp{background:var(--acc);color:#fff}
+.bp:hover{background:var(--acch)}
+.bo{background:transparent;color:var(--acc);border:1.5px solid var(--acc)}
+.bo:hover{background:var(--accl)}
+.bd{background:#fdecea;color:var(--red);border:1.5px solid #f5c6c0}
+.bd:hover{background:#f9d4d0}
+.bsm{padding:5px 10px;font-size:.77rem}
+.fin{padding:7px 12px;border:1.5px solid var(--brd);border-radius:8px;font-size:.82rem;background:var(--surf2);color:var(--txt);outline:none}
+.fin:focus{border-color:var(--acc)}
+
+/* ── EMPTY ── */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;color:var(--mut);height:100%}
+.empty .ei{font-size:2.6rem;margin-bottom:13px}
+.empty p{font-size:.88rem;line-height:1.6}
+
+/* ── MODAL ── */
 .mov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:999;align-items:center;justify-content:center}
 .mov.open{display:flex}
 .modal{background:#fff;border-radius:12px;padding:24px;width:330px;box-shadow:0 8px 40px rgba(0,0,0,.18)}
@@ -164,379 +134,329 @@ textarea.nta:focus{border-color:var(--acc)}
 .mact{display:flex;justify-content:flex-end;gap:8px}
 
 @media(max-width:640px){.app{padding:10px}:root{--sw:170px}.fg input[type="text"]{min-width:100%}.atb{flex-direction:column;align-items:stretch}}
-@media(max-width:480px){:root{--sw:48px}.fn,.fc2,.sbh h3,.nff{display:none}.fic{font-size:1.4rem}.fi{justify-content:center;padding:10px 4px}.sbh{padding:10px 4px}}
+@media(max-width:480px){:root{--sw:48px}.fname,.fcnt,.sbh h3,.nff{display:none}.icon{font-size:1.4rem}.fi{justify-content:center;padding:10px 4px}.sbh{padding:10px 4px}}
 </style>
 </head>
 <body>
 
-<!-- ══ SETUP ══ -->
-<div class="ov" id="ov-setup">
- <div class="card">
-  <h2>🔧 Conectar ao GitHub — 1 passo só</h2>
-  <p class="sub">O caderno salva seus dados diretamente no seu repositório GitHub. Configure uma vez e acesse de qualquer dispositivo.</p>
-  <div id="repo-section"></div>
-  <div class="steps">
-   <div class="step">
-    <div class="sn">1</div>
-    <div class="sb">
-     No GitHub clique na sua <strong>foto</strong> → <strong>Settings</strong> → role até o fim → <strong>Developer settings</strong> → <strong>Personal access tokens</strong> → <strong>Tokens (classic)</strong><br><br>
-     → <strong>Generate new token (classic)</strong> → em <strong>Note</strong> escreva <code>Meu Caderno</code> → <strong>Expiration: No expiration</strong> → marque <strong>repo</strong> → <strong>Generate token</strong><br><br>
-     → <strong>Copie o token</strong> gerado (começa com <code>ghp_</code>) — ele só aparece uma vez!
+<div class="app">
+  <div class="aph">
+    <div class="logo">📒</div>
+    <div>
+      <h1>Meu Caderno</h1>
+      <p>Anotações por pasta · Ações do dia a dia</p>
     </div>
-   </div>
   </div>
-  <div class="sform">
-   <div class="sf">
-    <label>TOKEN DO GITHUB (ghp_...)</label>
-    <input type="password" id="cfg-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-     oninput="this.classList.toggle('ok',this.value.trim().length>10)" />
-   </div>
-   <div id="setup-err"></div>
-   <button class="btn bp" id="cfg-btn" onclick="saveSetup()">✅ Conectar e abrir o caderno</button>
-   <p style="font-size:.72rem;color:var(--mut);margin-top:4px;line-height:1.5">
-    ⚠️ Seu repositório é público — qualquer pessoa pode ler o arquivo de dados se souber o endereço. Para uso com informações sensíveis, considere tornar o repositório privado.
-   </p>
-  </div>
- </div>
-</div>
 
-<!-- ══ APP ══ -->
-<div class="app" id="app" style="display:none">
- <div class="aph">
-  <div class="logo">📒</div>
-  <div><h1>Meu Caderno</h1><p id="repo-lbl" style="font-size:.73rem;color:var(--mut)"></p></div>
-  <div class="hr">
-   <span id="synclbl" style="color:var(--mut)">⏳</span>
-   <button class="bcfg" onclick="loadData()" title="Sincronizar agora">🔄 Sync</button>
-   <button class="bcfg" onclick="resetSetup()">⚙️ Config</button>
+  <div class="tnav">
+    <button class="tbtn active" onclick="switchTab('notes')">📁 Anotações por Pasta</button>
+    <button class="tbtn" onclick="switchTab('actions')">✅ Ações do Dia a Dia</button>
   </div>
- </div>
- <div class="tnav">
-  <button class="tbtn active" onclick="switchTab('notes')">📁 Anotações por Pasta</button>
-  <button class="tbtn" onclick="switchTab('actions')">✅ Ações do Dia a Dia</button>
- </div>
- <div class="tpanels">
-  <div id="tab-notes" class="tp active">
-   <div class="nl">
-    <div class="sb2">
-     <div class="sbh">
-      <h3>Pastas</h3>
-      <div class="nff">
-       <input type="text" id="nfi" placeholder="Nova pasta…" maxlength="40" onkeydown="if(event.key==='Enter')createFolder()"/>
-       <button onclick="createFolder()">＋</button>
+
+  <div class="tpanels">
+
+    <!-- NOTAS -->
+    <div id="tab-notes" class="tp active">
+      <div class="nl">
+        <div class="sidebar">
+          <div class="sbh">
+            <h3>Pastas</h3>
+            <div class="nff">
+              <input type="text" id="nfi" placeholder="Nova pasta…" maxlength="40"
+                onkeydown="if(event.key==='Enter')createFolder()"/>
+              <button onclick="createFolder()">＋</button>
+            </div>
+          </div>
+          <div class="flist" id="flist"></div>
+        </div>
+
+        <div class="npanel">
+          <div class="nph" id="nph">
+            <div style="display:flex;align-items:center;gap:10px;color:var(--mut)">
+              <span style="font-size:1.3rem">👈</span>
+              <p style="font-size:.87rem">Selecione ou crie uma pasta</p>
+            </div>
+          </div>
+          <div class="nbody" id="nbody"></div>
+        </div>
       </div>
-     </div>
-     <div class="fl" id="flist"></div>
     </div>
-    <div class="np">
-     <div class="nph2" id="nph">
-      <div style="display:flex;align-items:center;gap:10px;color:var(--mut)"><span style="font-size:1.3rem">👈</span><p style="font-size:.87rem">Selecione ou crie uma pasta</p></div>
-     </div>
-     <div class="nb2" id="nbody"></div>
+
+    <!-- AÇÕES -->
+    <div id="tab-actions" class="tp">
+      <div class="ati">
+        <div class="atb">
+          <div class="fg">
+            <label>Descrição da ação</label>
+            <input type="text" id="act-txt" placeholder="Descreva a ação…"
+              onkeydown="if(event.key==='Enter')addAction()"/>
+          </div>
+          <div class="fg">
+            <label>Vencimento</label>
+            <input type="date" id="act-due"/>
+          </div>
+          <button class="btn bp" onclick="addAction()" style="align-self:flex-end">＋ Adicionar</button>
+        </div>
+        <div class="sbar" id="sbar" style="display:none"></div>
+        <div class="ascr">
+          <div id="ap"></div>
+          <div id="ads" style="display:none">
+            <div class="sdiv">Concluídas</div>
+            <div id="ad"></div>
+          </div>
+        </div>
+      </div>
     </div>
-   </div>
+
   </div>
-  <div id="tab-actions" class="tp">
-   <div class="ati">
-    <div class="atb">
-     <div class="fg"><label>Descrição da ação</label>
-      <input type="text" id="act-txt" placeholder="Descreva a ação…" onkeydown="if(event.key==='Enter')addAction()"/></div>
-     <div class="fg"><label>Vencimento</label><input type="date" id="act-due"/></div>
-     <button class="btn bp" onclick="addAction()" style="align-self:flex-end">＋ Adicionar</button>
-    </div>
-    <div class="sbar" id="sbar" style="display:none"></div>
-    <div class="ascr">
-     <div id="ap"></div>
-     <div id="ads" style="display:none"><div class="sdiv">Concluídas</div><div id="ad"></div></div>
-    </div>
-   </div>
-  </div>
- </div>
 </div>
 
+<!-- Modal renomear -->
 <div class="mov" id="ren-mov">
- <div class="modal">
-  <h3>✏️ Renomear pasta</h3>
-  <input type="text" id="ren-in" maxlength="40" onkeydown="if(event.key==='Enter')doRename()"/>
-  <div class="mact">
-   <button class="btn bo" onclick="closeRen()">Cancelar</button>
-   <button class="btn bp" onclick="doRename()">Salvar</button>
+  <div class="modal">
+    <h3>✏️ Renomear pasta</h3>
+    <input type="text" id="ren-in" maxlength="40"
+      onkeydown="if(event.key==='Enter')doRename()"/>
+    <div class="mact">
+      <button class="btn bo" onclick="closeRen()">Cancelar</button>
+      <button class="btn bp" onclick="doRename()">Salvar</button>
+    </div>
   </div>
- </div>
 </div>
 
 <script>
-/* ─── CONFIG ─── */
-const SK='nb_gh_v2';
-function loadCfg(){try{return JSON.parse(localStorage.getItem(SK))||null;}catch{return null;}}
-function saveCfg(c){localStorage.setItem(SK,JSON.stringify(c));}
-function clearCfg(){localStorage.removeItem(SK);}
+/* ── STORAGE ── */
+const SK = { f:'nb_folders_v4', a:'nb_actions_v4' };
+function load(k){ try{ return JSON.parse(localStorage.getItem(k))||[]; }catch{ return []; } }
+function save(k,d){ localStorage.setItem(k, JSON.stringify(d)); }
 
-/* ─── REPO AUTO-DETECT ─── */
-let detectedRepo=null;
-function detectRepo(){
-  const host=window.location.hostname;
-  const m=host.match(/^([^.]+)\.github\.io$/i);
-  if(!m)return null;
-  const owner=m[1];
-  const repo=window.location.pathname.split('/').filter(Boolean)[0]||'';
-  return repo?{owner,repo}:null;
-}
-function renderRepoSection(){
-  const el=document.getElementById('repo-section');
-  detectedRepo=detectRepo();
-  if(detectedRepo){
-    el.innerHTML=`<div class="repo-badge"><span class="rb-icon">📁</span>
-      <div>Repositório detectado:<br><strong>${esc(detectedRepo.owner)} / ${esc(detectedRepo.repo)}</strong></div>
-      <button class="rb-change" onclick="showManualRepo()">Trocar</button></div>`;
-  } else { showManualRepo(); }
-}
-function showManualRepo(){
-  detectedRepo=null;
-  document.getElementById('repo-section').innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
-      <div class="sf"><label>USUÁRIO DO GITHUB</label>
-        <input type="text" id="cfg-owner" placeholder="froesal-star" oninput="this.classList.toggle('ok',this.value.trim().length>0)"/></div>
-      <div class="sf"><label>NOME DO REPOSITÓRIO</label>
-        <input type="text" id="cfg-repo" placeholder="Meu-Caderno" oninput="this.classList.toggle('ok',this.value.trim().length>0)"/></div>
-    </div>`;
-}
+/* ── STATE ── */
+let folders     = load(SK.f);
+let actionsData = load(SK.a);
+let activeFId   = null;
+let colState    = {};
+let renFId      = null;
+let nxtF = folders.length ? Math.max(...folders.map(f=>f.id))+1 : 1;
+let nxtA = actionsData.length ? Math.max(...actionsData.map(a=>a.id))+1 : 1;
+let nxtN = (() => { let m=0; folders.forEach(f=>f.notes.forEach(n=>{ if(n.id>m)m=n.id; })); return m+1; })();
 
-/* ─── SETUP ─── */
-async function saveSetup(){
-  const token=document.getElementById('cfg-token').value.trim();
-  const err=document.getElementById('setup-err');
-  const btn=document.getElementById('cfg-btn');
-  if(!token){err.textContent='Cole o token do GitHub.';return;}
-  let owner,repo;
-  if(detectedRepo){owner=detectedRepo.owner;repo=detectedRepo.repo;}
-  else{
-    owner=(document.getElementById('cfg-owner')||{value:''}).value.trim();
-    repo=(document.getElementById('cfg-repo')||{value:''}).value.trim();
-    if(!owner||!repo){err.textContent='Preencha usuário e repositório.';return;}
-  }
-  btn.disabled=true;btn.textContent='Verificando…';err.textContent='';
-  try{
-    const r=await ghGet(`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`,token);
-    if(r.status===401||r.status===403)throw new Error('Token inválido ou sem permissão de acesso ao repositório.');
-    if(r.status===404)throw new Error('Repositório não encontrado. Verifique o usuário e o nome.');
-    if(!r.ok)throw new Error('Erro '+r.status+'. Verifique os dados e tente novamente.');
-  }catch(e){
-    err.textContent=e.message;
-    btn.disabled=false;btn.textContent='✅ Conectar e abrir o caderno';
-    return;
-  }
-  saveCfg({owner,repo,token});
-  document.getElementById('ov-setup').classList.remove('open');
-  initApp({owner,repo,token});
-}
-function resetSetup(){if(confirm('Reconfigurar? Seus dados no GitHub não serão apagados.')){clearCfg();location.reload();}}
-
-/* ─── GITHUB API ─── */
-let GH=null, fileSHA=null;
-const DATA_FILE='caderno-data.json';
-
-function ghGet(url,tok){
-  return fetch(url,{headers:{'Authorization':`token ${tok||GH.token}`,'Accept':'application/vnd.github.v3+json'}});
-}
-function fileUrl(){
-  return`https://api.github.com/repos/${encodeURIComponent(GH.owner)}/${encodeURIComponent(GH.repo)}/contents/${DATA_FILE}`;
-}
-// UTF-8 safe base64 encode/decode — handles Portuguese accented characters
-function toB64(str){
-  const b=new TextEncoder().encode(str);let s='';
-  b.forEach(x=>s+=String.fromCharCode(x));return btoa(s);
-}
-function fromB64(b64){
-  const bin=atob(b64.replace(/\s/g,''));
-  const b=new Uint8Array(bin.length);
-  for(let i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);
-  return new TextDecoder().decode(b);
-}
-
-async function loadData(){
-  setSyncLbl('loading');
-  try{
-    const r=await ghGet(fileUrl());
-    if(r.status===404){fileSHA=null;folders=[];actionsData=[];recalcIds();renderAll();setSyncLbl('synced');return;}
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const j=await r.json();
-    fileSHA=j.sha;
-    const d=JSON.parse(fromB64(j.content));
-    folders=Array.isArray(d.folders)?d.folders:[];
-    actionsData=Array.isArray(d.actions)?d.actions:[];
-    recalcIds();renderAll();setSyncLbl('synced');
-  }catch(e){setSyncLbl('offline');console.error('load:',e);}
-}
-
-let saveTimer=null;
-function schedSave(){clearTimeout(saveTimer);saveTimer=setTimeout(pushData,1800);}
-
-async function pushData(retry=false){
-  if(!GH)return;
-  setSyncLbl('saving');
-  const content=toB64(JSON.stringify({folders,actions:actionsData,updatedAt:new Date().toISOString()}));
-  const body={message:'sync',content,...(fileSHA?{sha:fileSHA}:{})};
-  try{
-    const r=await fetch(fileUrl(),{method:'PUT',headers:{'Authorization':`token ${GH.token}`,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
-    if(r.status===409&&!retry){await loadData();await pushData(true);return;}
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const j=await r.json();fileSHA=j.content.sha;setSyncLbl('synced');
-  }catch(e){setSyncLbl('offline');console.error('push:',e);}
-}
-
-function setSyncLbl(s){
-  const el=document.getElementById('synclbl');if(!el)return;
-  const m={loading:['⏳ Carregando…','var(--mut)'],saving:['🔄 Salvando…','var(--ylw)'],
-           synced:['✅ Sincronizado','var(--acc)'],offline:['📴 Offline','var(--red)']};
-  const v=m[s]||m.synced;el.textContent=v[0];el.style.color=v[1];
-}
-
-/* ─── STATE ─── */
-let folders=[],actionsData=[],activeFId=null,colState={},renFId=null,nxtF=1,nxtN=1,nxtA=1;
-function recalcIds(){
-  nxtF=folders.length?Math.max(...folders.map(f=>f.id))+1:1;
-  let mx=0;folders.forEach(f=>f.notes.forEach(n=>{if(n.id>mx)mx=n.id;}));nxtN=mx+1;
-  nxtA=actionsData.length?Math.max(...actionsData.map(a=>a.id))+1:1;
-}
-function renderAll(){renderFolders();renderNotesPanel();renderActions();}
-
-/* ─── UTILS ─── */
-function today(){return new Date().toISOString().slice(0,10);}
-function fmtD(iso){if(!iso)return'';const[y,m,d]=iso.split('-');return`${d}/${m}/${y}`;}
-// XSS prevention: all user content rendered as innerHTML must pass through esc()
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');}
+/* ── UTILS ── */
+function today(){ return new Date().toISOString().slice(0,10); }
+function fmtD(iso){ if(!iso)return''; const[y,m,d]=iso.split('-'); return`${d}/${m}/${y}`; }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;'); }
 const EMS=['📁','👤','📌','⭐','🔖','💡','📊','🎯','🚀','🔔','📋','💼'];
-function em(n){let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))&0xfff;return EMS[h%EMS.length];}
+function em(n){ let h=0; for(const c of n) h=(h*31+c.charCodeAt(0))&0xfff; return EMS[h%EMS.length]; }
 
-/* ─── TABS ─── */
+/* ── TABS ── */
 function switchTab(t){
   document.querySelectorAll('.tbtn').forEach((b,i)=>b.classList.toggle('active',i===(t==='notes'?0:1)));
   document.getElementById('tab-notes').classList.toggle('active',t==='notes');
   document.getElementById('tab-actions').classList.toggle('active',t==='actions');
 }
 
-/* ─── FOLDERS ─── */
+/* ── PASTAS ── */
 function renderFolders(){
   const el=document.getElementById('flist');
-  if(!folders.length){el.innerHTML=`<div style="padding:18px 10px;text-align:center;color:var(--mut);font-size:.8rem;line-height:1.7">Crie uma pasta.<br>Ex: nome de um<br>colega ou assunto.</div>`;return;}
+  if(!folders.length){
+    el.innerHTML=`<div style="padding:18px 10px;text-align:center;color:var(--mut);font-size:.8rem;line-height:1.7">Crie uma pasta.<br>Ex: nome de um<br>colega ou assunto.</div>`;
+    return;
+  }
   el.innerHTML=folders.map(f=>`
   <div class="fi ${f.id===activeFId?'active':''}" onclick="selF(${f.id})">
-   <span class="fic">${f.em||'📁'}</span><span class="fn">${esc(f.name)}</span>
-   <span class="fc2">${f.notes.length}</span>
-   <button class="fd" onclick="event.stopPropagation();openRen(${f.id})" title="Renomear">✏️</button>
-   <button class="fd" onclick="event.stopPropagation();delF(${f.id})" title="Excluir">✕</button>
+    <span class="icon">${f.em||'📁'}</span>
+    <span class="fname">${esc(f.name)}</span>
+    <span class="fcnt">${f.notes.length}</span>
+    <button class="fdel" onclick="event.stopPropagation();openRen(${f.id})" title="Renomear">✏️</button>
+    <button class="fdel" onclick="event.stopPropagation();delF(${f.id})" title="Excluir">✕</button>
   </div>`).join('');
 }
+
 function createFolder(){
-  const inp=document.getElementById('nfi'),name=inp.value.trim();if(!name){inp.focus();return;}
-  const f={id:nxtF++,name,em:em(name),notes:[]};folders.push(f);inp.value='';pushData();selF(f.id);
+  const inp=document.getElementById('nfi'), name=inp.value.trim();
+  if(!name){ inp.focus(); return; }
+  const f={id:nxtF++, name, em:em(name), notes:[]};
+  folders.push(f); save(SK.f,folders); inp.value='';
+  selF(f.id);
 }
+
 function delF(id){
-  const f=folders.find(f=>f.id===id);if(!f)return;
+  const f=folders.find(f=>f.id===id); if(!f)return;
   if(!confirm(`Excluir a pasta "${f.name}" e todas as anotações?`))return;
   folders=folders.filter(f=>f.id!==id);
-  if(activeFId===id)activeFId=folders.length?folders[0].id:null;
-  pushData();renderFolders();renderNotesPanel();
+  if(activeFId===id) activeFId=folders.length?folders[0].id:null;
+  save(SK.f,folders); renderFolders(); renderNotes();
 }
-function openRen(id){renFId=id;const f=folders.find(f=>f.id===id);document.getElementById('ren-in').value=f?f.name:'';document.getElementById('ren-mov').classList.add('open');setTimeout(()=>document.getElementById('ren-in').focus(),50);}
-function closeRen(){renFId=null;document.getElementById('ren-mov').classList.remove('open');}
-function doRename(){const name=document.getElementById('ren-in').value.trim();if(!name)return;const f=folders.find(f=>f.id===renFId);if(f){f.name=name;f.em=em(name);}pushData();closeRen();renderFolders();if(activeFId===renFId)renderNotesPanel();}
+
+function openRen(id){
+  renFId=id;
+  const f=folders.find(f=>f.id===id);
+  document.getElementById('ren-in').value=f?f.name:'';
+  document.getElementById('ren-mov').classList.add('open');
+  setTimeout(()=>document.getElementById('ren-in').focus(),50);
+}
+function closeRen(){ renFId=null; document.getElementById('ren-mov').classList.remove('open'); }
+function doRename(){
+  const name=document.getElementById('ren-in').value.trim(); if(!name)return;
+  const f=folders.find(f=>f.id===renFId);
+  if(f){ f.name=name; f.em=em(name); }
+  save(SK.f,folders); closeRen(); renderFolders();
+  if(activeFId===renFId) renderNotes();
+}
 document.getElementById('ren-mov').addEventListener('click',e=>{if(e.target===e.currentTarget)closeRen();});
 
-/* ─── NOTES PANEL ─── */
-function selF(id){activeFId=id;renderFolders();renderNotesPanel();}
-function renderNotesPanel(){
-  const hdr=document.getElementById('nph'),body=document.getElementById('nbody');
-  if(!activeFId){hdr.innerHTML=`<div style="display:flex;align-items:center;gap:10px;color:var(--mut)"><span style="font-size:1.3rem">👈</span><p style="font-size:.87rem">Selecione ou crie uma pasta</p></div>`;body.innerHTML='';return;}
-  const folder=folders.find(f=>f.id===activeFId);if(!folder)return;
-  const pfd=document.getElementById('nfd');const fd=pfd?pfd.value:'';
-  hdr.innerHTML=`<span style="font-size:1.1rem">${folder.em}</span><h2>${esc(folder.name)}</h2>
-   <div class="ha">
-    <input type="date" id="nfd" class="fin bsm" value="${esc(fd)}" oninput="renderNotesPanel()" title="Filtrar por data"/>
-    <button class="btn bo bsm" onclick="document.getElementById('nfd').value='';renderNotesPanel()">Limpar</button>
-    <button class="btn bp bsm" onclick="addNote()">＋ Nova anotação</button>
-   </div>`;
+/* ── PAINEL DE NOTAS ── */
+function selF(id){ activeFId=id; renderFolders(); renderNotes(); }
+
+function renderNotes(){
+  const hdr=document.getElementById('nph'), body=document.getElementById('nbody');
+  if(!activeFId){
+    hdr.innerHTML=`<div style="display:flex;align-items:center;gap:10px;color:var(--mut)"><span style="font-size:1.3rem">👈</span><p style="font-size:.87rem">Selecione ou crie uma pasta</p></div>`;
+    body.innerHTML=''; return;
+  }
+  const folder=folders.find(f=>f.id===activeFId); if(!folder)return;
+  const pfd=document.getElementById('nfd'); const fd=pfd?pfd.value:'';
+
+  hdr.innerHTML=`
+    <span style="font-size:1.1rem">${folder.em}</span>
+    <h2>${esc(folder.name)}</h2>
+    <div class="ha">
+      <input type="date" id="nfd" class="fin bsm" value="${esc(fd)}"
+        oninput="renderNotes()" title="Filtrar por data"/>
+      <button class="btn bo bsm" onclick="document.getElementById('nfd').value='';renderNotes()">Limpar</button>
+      <button class="btn bp bsm" onclick="addNote()">＋ Nova anotação</button>
+    </div>`;
+
   const fd2=document.getElementById('nfd').value;
   let notes=[...folder.notes].sort((a,b)=>b.date.localeCompare(a.date));
-  if(fd2)notes=notes.filter(n=>n.date===fd2);
-  if(!notes.length){body.innerHTML=`<div class="empty"><div class="ei">📝</div><p>${fd2?'Nenhuma anotação nesta data.':'Esta pasta está vazia.<br>Clique em <strong>+ Nova anotação</strong>.'}</p></div>`;return;}
+  if(fd2) notes=notes.filter(n=>n.date===fd2);
+
+  if(!notes.length){
+    body.innerHTML=`<div class="empty"><div class="ei">📝</div><p>${fd2?'Nenhuma anotação nesta data.':'Esta pasta está vazia.<br>Clique em <strong>+ Nova anotação</strong>.'}</p></div>`;
+    return;
+  }
   body.innerHTML=notes.map(n=>{
-    const c=!!colState[n.id],pv=c&&n.text?n.text.slice(0,70)+(n.text.length>70?'…':''):'';
+    const c=!!colState[n.id];
+    const pv=c&&n.text?n.text.slice(0,70)+(n.text.length>70?'…':''):'';
     return`<div class="ne ${c?'col':''}" id="ne-${n.id}">
-     <div class="neh" onclick="togNote(${n.id})">
-      <span class="dl">📅 ${fmtD(n.date)}</span>${c&&pv?`<span class="pv">${esc(pv)}</span>`:''}
-      <span class="cv">▼</span>
-      <button class="btn bd bsm" style="margin-left:5px" onclick="event.stopPropagation();delNote(${n.id})">🗑</button>
-     </div>
-     <div class="neb">
-      <textarea class="nta" placeholder="Escreva aqui…" oninput="noteChg(${n.id},this.value)">${esc(n.text)}</textarea>
-      <div class="nef"><span class="asl">💾 Salvo automaticamente</span></div>
-     </div>
+      <div class="neh" onclick="togNote(${n.id})">
+        <span class="dlbl">📅 ${fmtD(n.date)}</span>
+        ${c&&pv?`<span class="prev">${esc(pv)}</span>`:''}
+        <span class="chev">▼</span>
+        <button class="btn bd bsm" style="margin-left:5px"
+          onclick="event.stopPropagation();delNote(${n.id})">🗑</button>
+      </div>
+      <div class="nebody">
+        <textarea class="nta" placeholder="Escreva aqui…"
+          oninput="noteChg(${n.id},this.value)">${esc(n.text)}</textarea>
+        <div class="nef"><span class="asl">💾 Salvo automaticamente</span></div>
+      </div>
     </div>`;
   }).join('');
 }
+
 function addNote(){
-  if(!activeFId)return;const folder=folders.find(f=>f.id===activeFId);if(!folder)return;
-  const d=today(),ex=folder.notes.find(n=>n.date===d);
-  if(ex){colState[ex.id]=false;renderNotesPanel();focusNote(ex.id);return;}
-  const n={id:nxtN++,date:d,text:''};folder.notes.unshift(n);colState[n.id]=false;
-  pushData();renderFolders();renderNotesPanel();focusNote(n.id);
+  if(!activeFId)return;
+  const folder=folders.find(f=>f.id===activeFId); if(!folder)return;
+  const d=today(), ex=folder.notes.find(n=>n.date===d);
+  if(ex){ colState[ex.id]=false; renderNotes(); focusNote(ex.id); return; }
+  const n={id:nxtN++, date:d, text:''};
+  folder.notes.unshift(n); colState[n.id]=false;
+  save(SK.f,folders); renderFolders(); renderNotes(); focusNote(n.id);
 }
-function focusNote(id){setTimeout(()=>{const el=document.getElementById('ne-'+id);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});const ta=el.querySelector('textarea');if(ta)ta.focus();}},80);}
-function delNote(id){if(!confirm('Excluir esta anotação?'))return;const folder=folders.find(f=>f.id===activeFId);if(!folder)return;folder.notes=folder.notes.filter(n=>n.id!==id);pushData();renderFolders();renderNotesPanel();}
-function noteChg(id,txt){const folder=folders.find(f=>f.id===activeFId);if(!folder)return;const n=folder.notes.find(n=>n.id===id);if(n)n.text=txt;schedSave();}
+function focusNote(id){
+  setTimeout(()=>{
+    const el=document.getElementById('ne-'+id);
+    if(el){ el.scrollIntoView({behavior:'smooth',block:'center'}); const ta=el.querySelector('textarea'); if(ta)ta.focus(); }
+  },80);
+}
+function delNote(id){
+  if(!confirm('Excluir esta anotação?'))return;
+  const folder=folders.find(f=>f.id===activeFId); if(!folder)return;
+  folder.notes=folder.notes.filter(n=>n.id!==id);
+  save(SK.f,folders); renderFolders(); renderNotes();
+}
+function noteChg(id,txt){
+  const folder=folders.find(f=>f.id===activeFId); if(!folder)return;
+  const n=folder.notes.find(n=>n.id===id); if(n)n.text=txt;
+  save(SK.f,folders);
+}
 function togNote(id){
-  colState[id]=!colState[id];const el=document.getElementById('ne-'+id);if(!el)return;
+  colState[id]=!colState[id];
+  const el=document.getElementById('ne-'+id); if(!el)return;
   el.classList.toggle('col',colState[id]);
-  if(colState[id]){const folder=folders.find(f=>f.id===activeFId);const n=folder&&folder.notes.find(n=>n.id===id);
-    if(n&&n.text){let p=el.querySelector('.pv');if(!p){p=document.createElement('span');p.className='pv';el.querySelector('.neh').insertBefore(p,el.querySelector('.cv'));}p.textContent=n.text.slice(0,70)+(n.text.length>70?'…':'');}}
+  if(colState[id]){
+    const folder=folders.find(f=>f.id===activeFId);
+    const n=folder&&folder.notes.find(n=>n.id===id);
+    if(n&&n.text){
+      let p=el.querySelector('.prev');
+      if(!p){ p=document.createElement('span'); p.className='prev'; el.querySelector('.neh').insertBefore(p,el.querySelector('.chev')); }
+      p.textContent=n.text.slice(0,70)+(n.text.length>70?'…':'');
+    }
+  }
 }
 
-/* ─── ACTIONS ─── */
+/* ── AÇÕES ── */
 function addAction(){
-  const te=document.getElementById('act-txt'),de=document.getElementById('act-due');
-  const txt=te.value.trim();if(!txt){te.focus();return;}
-  actionsData.push({id:nxtA++,text:txt,due:de.value||null,created:today(),done:false,doneAt:null});
-  pushData();te.value='';de.value='';te.focus();renderActions();
+  const te=document.getElementById('act-txt'), de=document.getElementById('act-due');
+  const txt=te.value.trim(); if(!txt){ te.focus(); return; }
+  actionsData.push({id:nxtA++, text:txt, due:de.value||null, created:today(), done:false, doneAt:null});
+  save(SK.a,actionsData); te.value=''; de.value=''; te.focus(); renderActions();
 }
-function togA(id){const a=actionsData.find(a=>a.id===id);if(!a)return;a.done=!a.done;a.doneAt=a.done?today():null;pushData();renderActions();}
-function delA(id){if(!confirm('Excluir esta ação?'))return;actionsData=actionsData.filter(a=>a.id!==id);pushData();renderActions();}
-function dcls(due,done){if(done||!due)return'';const t=today();if(due<t)return'ov';if(due===t)return'due';return'';}
-function dlbl(due,done){if(!due)return'';const c=dcls(due,done);return`<span class="mb ${c}">${c==='ov'?'🔴':c==='due'?'🟠':'📅'} ${c==='ov'?'Vencida':'Vence'}: ${fmtD(due)}</span>`;}
-function aiH(a){return`<div class="ai ${a.done?'done':''}">
- <div class="ack" onclick="togA(${a.id})">${a.done?'✓':''}</div>
- <div class="acon"><div class="atxt">${esc(a.text)}</div>
-  <div class="ameta"><span class="mb">🗓 ${fmtD(a.created)}</span>${dlbl(a.due,a.done)}${a.done&&a.doneAt?`<span class="mb dn">✔ ${fmtD(a.doneAt)}</span>`:''}</div>
- </div>
- <button class="adel" onclick="delA(${a.id})">✕</button>
-</div>`;}
+function togA(id){
+  const a=actionsData.find(a=>a.id===id); if(!a)return;
+  a.done=!a.done; a.doneAt=a.done?today():null;
+  save(SK.a,actionsData); renderActions();
+}
+function delA(id){
+  if(!confirm('Excluir esta ação?'))return;
+  actionsData=actionsData.filter(a=>a.id!==id);
+  save(SK.a,actionsData); renderActions();
+}
+function dcls(due,done){ if(done||!due)return''; const t=today(); if(due<t)return'ov'; if(due===t)return'due'; return''; }
+function dlbl(due,done){
+  if(!due)return''; const c=dcls(due,done);
+  return`<span class="mb ${c}">${c==='ov'?'🔴':c==='due'?'🟠':'📅'} ${c==='ov'?'Vencida':'Vence'}: ${fmtD(due)}</span>`;
+}
+function aiH(a){
+  return`<div class="ai ${a.done?'done':''}">
+    <div class="ack" onclick="togA(${a.id})">${a.done?'✓':''}</div>
+    <div class="acon">
+      <div class="atxt">${esc(a.text)}</div>
+      <div class="ameta">
+        <span class="mb">🗓 ${fmtD(a.created)}</span>
+        ${dlbl(a.due,a.done)}
+        ${a.done&&a.doneAt?`<span class="mb dn">✔ ${fmtD(a.doneAt)}</span>`:''}
+      </div>
+    </div>
+    <button class="adel" onclick="delA(${a.id})">✕</button>
+  </div>`;
+}
 function renderActions(){
   const s=[...actionsData].sort((a,b)=>a.id-b.id);
-  const p=s.filter(a=>!a.done),d=s.filter(a=>a.done);
+  const p=s.filter(a=>!a.done), d=s.filter(a=>a.done);
   const bar=document.getElementById('sbar');
-  if(actionsData.length){bar.style.display='flex';const ov=p.filter(a=>dcls(a.due,false)==='ov').length;
-    bar.innerHTML=`<div class="st">Total: <span>${actionsData.length}</span></div><div class="st">Pendentes: <span>${p.length}</span></div><div class="st">Concluídas: <span>${d.length}</span></div>${ov?`<div class="st" style="color:var(--red)">Vencidas: <span>${ov}</span></div>`:''}`;}
-  else bar.style.display='none';
-  document.getElementById('ap').innerHTML=p.length?`<div class="alist">${p.map(aiH).join('')}</div>`:`<div class="empty"><div class="ei">✅</div><p>Nenhuma ação pendente!<br>Adicione uma acima.</p></div>`;
-  const ds=document.getElementById('ads'),de=document.getElementById('ad');
-  if(d.length){ds.style.display='block';de.innerHTML=`<div class="alist">${d.map(aiH).join('')}</div>`;}else ds.style.display='none';
+  if(actionsData.length){
+    bar.style.display='flex';
+    const ov=p.filter(a=>dcls(a.due,false)==='ov').length;
+    bar.innerHTML=`<div class="st">Total: <span>${actionsData.length}</span></div>
+      <div class="st">Pendentes: <span>${p.length}</span></div>
+      <div class="st">Concluídas: <span>${d.length}</span></div>
+      ${ov?`<div class="st" style="color:var(--red)">Vencidas: <span>${ov}</span></div>`:''}`;
+  } else bar.style.display='none';
+
+  document.getElementById('ap').innerHTML = p.length
+    ? `<div class="alist">${p.map(aiH).join('')}</div>`
+    : `<div class="empty"><div class="ei">✅</div><p>Nenhuma ação pendente!<br>Adicione uma acima.</p></div>`;
+
+  const ds=document.getElementById('ads'), de=document.getElementById('ad');
+  if(d.length){ ds.style.display='block'; de.innerHTML=`<div class="alist">${d.map(aiH).join('')}</div>`; }
+  else ds.style.display='none';
 }
 
-/* ─── BOOT ─── */
-function initApp(cfg){
-  GH=cfg;
-  document.getElementById('app').style.display='flex';
-  document.getElementById('repo-lbl').textContent=`${cfg.owner} / ${cfg.repo}`;
-  loadData();
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadData();});
-}
-(function boot(){
-  renderRepoSection();
-  const cfg=loadCfg();
-  if(!cfg){document.getElementById('ov-setup').classList.add('open');return;}
-  initApp(cfg);
-})();
+/* ── INIT ── */
+renderFolders();
+if(folders.length) selF(folders[0].id);
+renderActions();
 </script>
 </body>
 </html>
