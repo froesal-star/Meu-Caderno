@@ -177,8 +177,70 @@ textarea.nta:focus{border-color:var(--acc)}
 .spinner{width:30px;height:30px;border:3px solid var(--brd);border-top-color:var(--acc);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-@media(max-width:640px){.app{padding:10px}:root{--sw:160px}.fg input[type="text"]{min-width:100%}.atb{flex-direction:column;align-items:stretch}}
-@media(max-width:480px){:root{--sw:48px}.fname,.fcnt,.sbh h3,.nff{display:none}.fi{justify-content:center;padding:10px 8px}.sbh{padding:10px 4px}}
+/* ── MOBILE ── */
+@media(max-width:640px){
+  .app{padding:10px;gap:8px}
+  .fg input[type="text"]{min-width:100%}
+  .atb{flex-direction:column;align-items:stretch}
+  .ati{padding:14px 14px}
+
+  /* Layout vertical: sidebar em cima, painel embaixo */
+  .nl{flex-direction:column}
+
+  /* Sidebar vira uma faixa horizontal de chips */
+  .sidebar{
+    width:100%;min-width:100%;
+    border-right:none;
+    border-bottom:1.5px solid var(--brd);
+    flex-direction:row;
+    align-items:center;
+    flex-shrink:0;
+    overflow:hidden;
+    background:var(--surf2);
+  }
+  .sbh{
+    padding:8px 10px;
+    border-bottom:none;
+    border-right:1px solid var(--brd);
+    flex-shrink:0;
+    display:flex;align-items:center;
+  }
+  .sbh h3{display:none;margin:0}
+  .nff{
+    flex-direction:row;gap:4px;
+    align-items:center;
+  }
+  .nff input{width:110px;padding:5px 7px;font-size:.78rem}
+  .nff button{width:28px;height:28px;font-size:.85rem}
+
+  /* Lista de pastas vira scroll horizontal */
+  .flist{
+    display:flex;flex-direction:row;flex-wrap:nowrap;
+    overflow-x:auto;overflow-y:hidden;
+    padding:6px 8px;gap:5px;
+    flex:1;
+    scrollbar-width:none;
+  }
+  .flist::-webkit-scrollbar{display:none}
+  .fi{
+    flex-shrink:0;
+    padding:5px 12px;
+    border-radius:20px;
+    border:1.5px solid var(--brd);
+    background:var(--surf);
+    gap:5px;
+    white-space:nowrap;
+  }
+  .fi.active{border-color:var(--acc)}
+  .fi .fcnt{display:none}
+  .fi:hover .fdel{display:none} /* esconde ações de pasta no chip */
+
+  /* Painel de notas ocupa o resto */
+  .npanel{flex:1;min-height:0}
+  .nph{padding:10px 14px;flex-wrap:wrap;gap:7px}
+  .nph h2{font-size:.88rem}
+  .nbody{padding:10px 14px}
+}
 </style>
 </head>
 <body>
