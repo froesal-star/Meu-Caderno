@@ -10,7 +10,7 @@
   --bg:#f0ede8;--surf:#fff;--surf2:#fafaf7;--brd:#e0ddd6;
   --acc:#3d6b4f;--accl:#eaf3ee;--acch:#2f5340;
   --txt:#2c2c2c;--mut:#90908a;--red:#c0392b;--ylw:#d4820a;
-  --r:10px;--sh:0 2px 14px rgba(0,0,0,.08);--sw:230px;
+  --r:10px;--sh:0 2px 14px rgba(0,0,0,.08);--sw:220px;
 }
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
 
@@ -45,7 +45,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .fi{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:.87rem;font-weight:500;transition:background .14s}
 .fi:hover{background:#ede9e3}
 .fi.active{background:var(--accl);color:var(--acc);font-weight:700}
-.fi .icon{font-size:1rem;flex-shrink:0}
 .fi .fname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fi .fcnt{font-size:.68rem;background:var(--brd);border-radius:10px;padding:1px 6px;color:var(--mut);flex-shrink:0}
 .fi.active .fcnt{background:#c8e6d4;color:var(--acc)}
@@ -94,8 +93,10 @@ textarea.nta:focus{border-color:var(--acc)}
 .ai.done .ack{background:var(--acc);border-color:var(--acc);color:#fff}
 .ack:hover{border-color:var(--acc)}
 .acon{flex:1;min-width:0}
-.atxt{font-size:.9rem;font-weight:500;line-height:1.5;word-break:break-word}
-.ai.done .atxt{text-decoration:line-through;color:var(--mut)}
+.atxt{font-size:.9rem;font-weight:500;line-height:1.5;word-break:break-word;cursor:text}
+.atxt:hover{color:var(--acc)}
+.ai.done .atxt{text-decoration:line-through;color:var(--mut);cursor:default}
+.ai.done .atxt:hover{color:var(--mut)}
 .ameta{display:flex;gap:11px;margin-top:5px;flex-wrap:wrap}
 .mb{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;color:var(--mut);font-weight:500}
 .mb.due{color:var(--ylw)}
@@ -105,6 +106,14 @@ textarea.nta:focus{border-color:var(--acc)}
 .adel:hover{color:var(--red);background:#fdecea}
 .sdiv{text-align:center;font-size:.74rem;color:var(--mut);margin:13px 0 9px;display:flex;align-items:center;gap:9px}
 .sdiv::before,.sdiv::after{content:'';flex:1;height:1px;background:var(--brd)}
+
+/* ── Edição inline de ação ── */
+.aedit-wrap{display:flex;gap:7px;align-items:center;width:100%;margin-bottom:4px}
+.aedit-in{flex:1;padding:6px 9px;border:1.5px solid var(--acc);border-radius:7px;font-size:.9rem;font-family:inherit;outline:none;background:#fff;color:var(--txt)}
+.aedit-ok{padding:5px 10px;background:var(--acc);color:#fff;border:none;border-radius:7px;font-size:.8rem;font-weight:700;cursor:pointer}
+.aedit-ok:hover{background:var(--acch)}
+.aedit-cn{padding:5px 8px;background:none;color:var(--mut);border:1.5px solid var(--brd);border-radius:7px;font-size:.8rem;cursor:pointer}
+.aedit-cn:hover{background:#ede9e3}
 
 /* ── BOTÕES ── */
 .btn{padding:8px 16px;border:none;border-radius:8px;font-size:.83rem;font-weight:600;cursor:pointer;transition:background .15s,transform .1s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
@@ -133,8 +142,8 @@ textarea.nta:focus{border-color:var(--acc)}
 .modal input:focus{border-color:var(--acc)}
 .mact{display:flex;justify-content:flex-end;gap:8px}
 
-@media(max-width:640px){.app{padding:10px}:root{--sw:170px}.fg input[type="text"]{min-width:100%}.atb{flex-direction:column;align-items:stretch}}
-@media(max-width:480px){:root{--sw:48px}.fname,.fcnt,.sbh h3,.nff{display:none}.icon{font-size:1.4rem}.fi{justify-content:center;padding:10px 4px}.sbh{padding:10px 4px}}
+@media(max-width:640px){.app{padding:10px}:root{--sw:160px}.fg input[type="text"]{min-width:100%}.atb{flex-direction:column;align-items:stretch}}
+@media(max-width:480px){:root{--sw:48px}.fname,.fcnt,.sbh h3,.nff{display:none}.fi{justify-content:center;padding:10px 8px}.sbh{padding:10px 4px}}
 </style>
 </head>
 <body>
@@ -211,7 +220,7 @@ textarea.nta:focus{border-color:var(--acc)}
   </div>
 </div>
 
-<!-- Modal renomear -->
+<!-- Modal renomear pasta -->
 <div class="mov" id="ren-mov">
   <div class="modal">
     <h3>✏️ Renomear pasta</h3>
@@ -236,6 +245,7 @@ let actionsData = load(SK.a);
 let activeFId   = null;
 let colState    = {};
 let renFId      = null;
+let editAId     = null;   // id da ação em modo de edição
 let nxtF = folders.length ? Math.max(...folders.map(f=>f.id))+1 : 1;
 let nxtA = actionsData.length ? Math.max(...actionsData.map(a=>a.id))+1 : 1;
 let nxtN = (() => { let m=0; folders.forEach(f=>f.notes.forEach(n=>{ if(n.id>m)m=n.id; })); return m+1; })();
@@ -244,8 +254,6 @@ let nxtN = (() => { let m=0; folders.forEach(f=>f.notes.forEach(n=>{ if(n.id>m)m
 function today(){ return new Date().toISOString().slice(0,10); }
 function fmtD(iso){ if(!iso)return''; const[y,m,d]=iso.split('-'); return`${d}/${m}/${y}`; }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;'); }
-const EMS=['📁','👤','📌','⭐','🔖','💡','📊','🎯','🚀','🔔','📋','💼'];
-function em(n){ let h=0; for(const c of n) h=(h*31+c.charCodeAt(0))&0xfff; return EMS[h%EMS.length]; }
 
 /* ── TABS ── */
 function switchTab(t){
@@ -263,7 +271,6 @@ function renderFolders(){
   }
   el.innerHTML=folders.map(f=>`
   <div class="fi ${f.id===activeFId?'active':''}" onclick="selF(${f.id})">
-    <span class="icon">${f.em||'📁'}</span>
     <span class="fname">${esc(f.name)}</span>
     <span class="fcnt">${f.notes.length}</span>
     <button class="fdel" onclick="event.stopPropagation();openRen(${f.id})" title="Renomear">✏️</button>
@@ -274,7 +281,7 @@ function renderFolders(){
 function createFolder(){
   const inp=document.getElementById('nfi'), name=inp.value.trim();
   if(!name){ inp.focus(); return; }
-  const f={id:nxtF++, name, em:em(name), notes:[]};
+  const f={id:nxtF++, name, notes:[]};
   folders.push(f); save(SK.f,folders); inp.value='';
   selF(f.id);
 }
@@ -298,7 +305,7 @@ function closeRen(){ renFId=null; document.getElementById('ren-mov').classList.r
 function doRename(){
   const name=document.getElementById('ren-in').value.trim(); if(!name)return;
   const f=folders.find(f=>f.id===renFId);
-  if(f){ f.name=name; f.em=em(name); }
+  if(f){ f.name=name; }
   save(SK.f,folders); closeRen(); renderFolders();
   if(activeFId===renFId) renderNotes();
 }
@@ -317,7 +324,6 @@ function renderNotes(){
   const pfd=document.getElementById('nfd'); const fd=pfd?pfd.value:'';
 
   hdr.innerHTML=`
-    <span style="font-size:1.1rem">${folder.em}</span>
     <h2>${esc(folder.name)}</h2>
     <div class="ha">
       <input type="date" id="nfd" class="fin bsm" value="${esc(fd)}"
@@ -402,26 +408,69 @@ function addAction(){
   actionsData.push({id:nxtA++, text:txt, due:de.value||null, created:today(), done:false, doneAt:null});
   save(SK.a,actionsData); te.value=''; de.value=''; te.focus(); renderActions();
 }
+
 function togA(id){
   const a=actionsData.find(a=>a.id===id); if(!a)return;
   a.done=!a.done; a.doneAt=a.done?today():null;
   save(SK.a,actionsData); renderActions();
 }
+
 function delA(id){
   if(!confirm('Excluir esta ação?'))return;
   actionsData=actionsData.filter(a=>a.id!==id);
   save(SK.a,actionsData); renderActions();
 }
+
+/* Ativa modo de edição inline */
+function startEditA(id){
+  if(editAId===id) return;
+  const a=actionsData.find(a=>a.id===id); if(!a||a.done)return;
+  editAId=id;
+  const wrap=document.getElementById('atxt-'+id);
+  if(!wrap)return;
+  wrap.innerHTML=`
+    <div class="aedit-wrap">
+      <input class="aedit-in" id="aedit-in-${id}" type="text"
+        value="${esc(a.text)}"
+        onkeydown="if(event.key==='Enter')saveEditA(${id});if(event.key==='Escape')cancelEditA(${id})"/>
+      <button class="aedit-ok" onclick="saveEditA(${id})">Salvar</button>
+      <button class="aedit-cn" onclick="cancelEditA(${id})">Cancelar</button>
+    </div>`;
+  setTimeout(()=>{
+    const inp=document.getElementById('aedit-in-'+id);
+    if(inp){ inp.focus(); inp.select(); }
+  },30);
+}
+
+function saveEditA(id){
+  const inp=document.getElementById('aedit-in-'+id); if(!inp)return;
+  const txt=inp.value.trim();
+  if(!txt){ inp.focus(); return; }
+  const a=actionsData.find(a=>a.id===id); if(a) a.text=txt;
+  editAId=null;
+  save(SK.a,actionsData); renderActions();
+}
+
+function cancelEditA(id){
+  editAId=null; renderActions();
+}
+
 function dcls(due,done){ if(done||!due)return''; const t=today(); if(due<t)return'ov'; if(due===t)return'due'; return''; }
 function dlbl(due,done){
   if(!due)return''; const c=dcls(due,done);
   return`<span class="mb ${c}">${c==='ov'?'🔴':c==='due'?'🟠':'📅'} ${c==='ov'?'Vencida':'Vence'}: ${fmtD(due)}</span>`;
 }
+
 function aiH(a){
+  const isEditing = editAId===a.id && !a.done;
+  const txtBlock = isEditing
+    ? `<div id="atxt-${a.id}"><!-- preenchido por startEditA --></div>`
+    : `<div class="atxt" id="atxt-${a.id}" ${!a.done?`onclick="startEditA(${a.id})" title="Clique para editar"`:''}>${esc(a.text)}</div>`;
+
   return`<div class="ai ${a.done?'done':''}">
     <div class="ack" onclick="togA(${a.id})">${a.done?'✓':''}</div>
     <div class="acon">
-      <div class="atxt">${esc(a.text)}</div>
+      ${txtBlock}
       <div class="ameta">
         <span class="mb">🗓 ${fmtD(a.created)}</span>
         ${dlbl(a.due,a.done)}
@@ -431,6 +480,7 @@ function aiH(a){
     <button class="adel" onclick="delA(${a.id})">✕</button>
   </div>`;
 }
+
 function renderActions(){
   const s=[...actionsData].sort((a,b)=>a.id-b.id);
   const p=s.filter(a=>!a.done), d=s.filter(a=>a.done);
@@ -451,6 +501,12 @@ function renderActions(){
   const ds=document.getElementById('ads'), de=document.getElementById('ad');
   if(d.length){ ds.style.display='block'; de.innerHTML=`<div class="alist">${d.map(aiH).join('')}</div>`; }
   else ds.style.display='none';
+
+  /* Se havia edição ativa, ativa o campo após render */
+  if(editAId!==null){
+    const wrap=document.getElementById('atxt-'+editAId);
+    if(wrap) startEditA(editAId);
+  }
 }
 
 /* ── INIT ── */
