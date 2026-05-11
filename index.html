@@ -86,6 +86,19 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .fdel{display:none;background:none;border:none;cursor:pointer;color:var(--mut);font-size:11px;padding:2px 4px;border-radius:4px;flex-shrink:0}
 .fdel:hover{color:var(--red);background:#fdecea}
 .fi:hover .fdel{display:inline-flex}
+
+/* ── DRAG & DROP ── */
+.drag-handle{flex-shrink:0;cursor:grab;color:#c0bdb7;font-size:13px;line-height:1;padding:0 4px 0 0;user-select:none;touch-action:none}
+.drag-handle:active{cursor:grabbing}
+.fi.dnd-src{opacity:.3;background:#ede9e3}
+.fi.dnd-above{border-top:2.5px solid var(--acc);margin-top:-1px}
+.fi.dnd-below{border-bottom:2.5px solid var(--acc);margin-bottom:-1px}
+/* ghost flutuante no touch */
+.dnd-ghost-el{position:fixed;pointer-events:none;z-index:9999;opacity:.88;
+  background:var(--surf);border:1.5px solid var(--acc);border-radius:8px;
+  padding:9px 10px;font-size:.87rem;font-weight:700;color:var(--acc);
+  box-shadow:0 6px 24px rgba(0,0,0,.18);white-space:nowrap;
+  display:flex;align-items:center;gap:8px;transform:scale(1.04)}
 .npanel{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 .nph{padding:12px 18px;border-bottom:1px solid var(--brd);display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0;background:#fff;min-height:56px}
 .nph h2{font-size:.93rem;font-weight:700;flex:1;min-width:80px}
@@ -424,6 +437,98 @@ function switchTab(t){
   document.getElementById('tab-actions').classList.toggle('active',t==='actions');
 }
 
+/* ── DRAG & DROP STATE ── */
+let _dndSrc = null;   // índice de origem
+let _touchDnd = null; // { srcIdx, ghostEl, startX, startY }
+let _touchTimer = null;
+
+function _dndReorder(srcIdx, tgtIdx){
+  if(srcIdx === tgtIdx) return;
+  const item = folders.splice(srcIdx, 1)[0];
+  const newIdx = srcIdx < tgtIdx ? tgtIdx - 1 : tgtIdx;
+  folders.splice(newIdx, 0, item);
+  renderFolders(); fbSave();
+}
+
+/* ── Desktop HTML5 DnD ── */
+function dndStart(e, idx){
+  _dndSrc = idx;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', idx);
+  setTimeout(()=>{ const el=document.querySelectorAll('#flist .fi')[idx]; if(el)el.classList.add('dnd-src'); }, 0);
+}
+function dndEnter(e, idx){
+  e.preventDefault();
+  document.querySelectorAll('#flist .fi').forEach((el,i)=>{ el.classList.remove('dnd-above','dnd-below'); });
+  if(_dndSrc===null||_dndSrc===idx) return;
+  const el=document.querySelectorAll('#flist .fi')[idx];
+  if(!el) return;
+  const mid = el.getBoundingClientRect().top + el.getBoundingClientRect().height/2;
+  el.classList.add(e.clientY < mid ? 'dnd-above' : 'dnd-below');
+}
+function dndDrop(e, idx){
+  e.preventDefault();
+  document.querySelectorAll('#flist .fi').forEach(el=>el.classList.remove('dnd-src','dnd-above','dnd-below'));
+  if(_dndSrc===null) return;
+  const src=_dndSrc; _dndSrc=null;
+  _dndReorder(src, idx);
+}
+function dndEnd(){
+  _dndSrc=null;
+  document.querySelectorAll('#flist .fi').forEach(el=>el.classList.remove('dnd-src','dnd-above','dnd-below'));
+}
+
+/* ── Mobile Touch DnD ── */
+function _touchStart(e, idx){
+  if(e.touches.length>1) return;
+  _touchTimer = setTimeout(()=>{
+    _touchTimer=null;
+    const t=e.touches[0];
+    const srcEl=document.querySelectorAll('#flist .fi')[idx];
+    const ghost=document.createElement('div');
+    ghost.className='dnd-ghost-el';
+    ghost.innerHTML='⠿ '+esc(folders[idx].name);
+    ghost.style.left=(t.clientX+12)+'px';
+    ghost.style.top=(t.clientY-18)+'px';
+    document.body.appendChild(ghost);
+    srcEl.classList.add('dnd-src');
+    _touchDnd={srcIdx:idx, ghostEl:ghost};
+    navigator.vibrate&&navigator.vibrate(40);
+  }, 450);
+}
+function _touchMove(e){
+  clearTimeout(_touchTimer); _touchTimer=null;
+  if(!_touchDnd) return;
+  e.preventDefault();
+  const t=e.touches[0];
+  _touchDnd.ghostEl.style.left=(t.clientX+12)+'px';
+  _touchDnd.ghostEl.style.top=(t.clientY-18)+'px';
+  // Detecta alvo
+  _touchDnd.ghostEl.style.display='none';
+  const under=document.elementFromPoint(t.clientX, t.clientY);
+  _touchDnd.ghostEl.style.display='';
+  const tgtEl=under?.closest('#flist .fi');
+  document.querySelectorAll('#flist .fi').forEach(el=>el.classList.remove('dnd-above','dnd-below'));
+  if(tgtEl){
+    const items=[...document.querySelectorAll('#flist .fi')];
+    const tgtIdx=items.indexOf(tgtEl);
+    if(tgtIdx!==-1&&tgtIdx!==_touchDnd.srcIdx){
+      const mid=tgtEl.getBoundingClientRect().top+tgtEl.getBoundingClientRect().height/2;
+      tgtEl.classList.add(t.clientY<mid?'dnd-above':'dnd-below');
+      _touchDnd.tgtIdx=tgtIdx;
+    }
+  }
+}
+function _touchEnd(e){
+  clearTimeout(_touchTimer); _touchTimer=null;
+  if(!_touchDnd) return;
+  const {srcIdx, ghostEl, tgtIdx}=_touchDnd;
+  ghostEl.remove();
+  document.querySelectorAll('#flist .fi').forEach(el=>el.classList.remove('dnd-src','dnd-above','dnd-below'));
+  _touchDnd=null;
+  if(tgtIdx!==undefined&&tgtIdx!==srcIdx) _dndReorder(srcIdx, tgtIdx);
+}
+
 /* ── PASTAS ── */
 function renderFolders(){
   const el=document.getElementById('flist');
@@ -431,13 +536,29 @@ function renderFolders(){
     el.innerHTML=`<div style="padding:18px 10px;text-align:center;color:var(--mut);font-size:.8rem;line-height:1.7">Crie uma pasta.<br>Ex: nome de um<br>colega ou assunto.</div>`;
     return;
   }
-  el.innerHTML=folders.map(f=>`
-  <div class="fi ${f.id===activeFId?'active':''}" onclick="selF(${f.id})">
+  el.innerHTML=folders.map((f,i)=>`
+  <div class="fi ${f.id===activeFId?'active':''}"
+    draggable="true"
+    ondragstart="dndStart(event,${i})"
+    ondragenter="dndEnter(event,${i})"
+    ondragover="event.preventDefault()"
+    ondrop="dndDrop(event,${i})"
+    ondragend="dndEnd()"
+    onclick="selF(${f.id})">
+    <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
     <span class="fname">${esc(f.name)}</span>
     <span class="fcnt">${(f.notes||[]).length}</span>
     <button class="fdel" onclick="event.stopPropagation();openRen(${f.id})" title="Renomear">✏️</button>
     <button class="fdel" onclick="event.stopPropagation();delF(${f.id})" title="Excluir">✕</button>
   </div>`).join('');
+
+  // Listeners de touch (não podem ser inline por causa do passive)
+  document.querySelectorAll('#flist .fi').forEach((el,i)=>{
+    el.addEventListener('touchstart', e=>_touchStart(e,i), {passive:true});
+    el.addEventListener('touchmove',  e=>_touchMove(e),   {passive:false});
+    el.addEventListener('touchend',   e=>_touchEnd(e),    {passive:true});
+    el.addEventListener('touchcancel',e=>{ clearTimeout(_touchTimer); if(_touchDnd){_touchDnd.ghostEl.remove();_touchDnd=null;} document.querySelectorAll('#flist .fi').forEach(x=>x.classList.remove('dnd-src','dnd-above','dnd-below')); },{passive:true});
+  });
 }
 
 function createFolder(){
