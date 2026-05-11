@@ -102,6 +102,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
   display:flex;align-items:center;gap:8px;transform:scale(1.04)}
 
 /* ── SUBPASTAS (desktop) ── */
+/* botão +/− estilo agrupamento Excel */
+.f-toggle{flex-shrink:0;width:17px;height:17px;border:1.5px solid #c8c5be;border-radius:3px;background:#fff;color:#888;font-size:13px;font-weight:900;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;user-select:none;padding:0;transition:all .15s}
+.f-toggle:hover{border-color:var(--acc);color:var(--acc);background:var(--accl)}
+.fi.active .f-toggle{border-color:var(--acc);color:var(--acc)}
 .sf-section{}
 .fi.sf-fi{padding-left:20px;font-size:.84rem;color:var(--txt)}
 .fi.sf-fi.active{background:var(--accl);color:var(--acc);font-weight:700}
@@ -429,6 +433,7 @@ let folders     = [];
 let actionsData = [];
 let activeFId   = null;
 let activeSFId  = null;   // id da subpasta ativa (null = nível de pasta)
+let expandedFIds = {};    // quais pastas estão com subpastas abertas
 let colState    = {};
 let renFId      = null;
 let renSFId     = null;   // se preenchido, estamos renomeando subpasta
@@ -633,12 +638,19 @@ function renderFolders(){
   }
 
   el.innerHTML = folders.map((f,i)=>{
-    const isActive = f.id===activeFId;
-    const sfs = f.subfolders||[];
+    const isActive   = f.id===activeFId;
+    const isExpanded = !!expandedFIds[f.id];
+    const sfs        = f.subfolders||[];
+    const hasSF      = sfs.length > 0;
     const totalNotes = (f.notes||[]).length + sfs.reduce((s,sf)=>s+(sf.notes||[]).length,0);
 
-    // Subpastas inline (visível apenas no desktop)
-    const sfHtml = isActive ? `
+    // Botão +/− (estilo Excel) — aparece quando pasta está ativa ou já tem subpastas
+    const toggleBtn = (isActive||hasSF) ? `
+      <button class="f-toggle" title="${isExpanded?'Fechar subpastas':'Abrir subpastas'}"
+        onclick="event.stopPropagation();toggleExpand(${f.id})">${isExpanded?'−':'+'}</button>` : '';
+
+    // Subpastas inline — só no desktop, só quando expandido
+    const sfHtml = isExpanded ? `
       <div class="sf-section">
         ${sfs.map(sf=>`
           <div class="fi sf-fi ${activeSFId===sf.id?'active':''}"
@@ -667,6 +679,7 @@ function renderFolders(){
         ondragstart="dndStart(event,${i})"
         onclick="selF(${f.id})">
         <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
+        ${toggleBtn}
         <span class="fname">${esc(f.name)}</span>
         <span class="fcnt">${totalNotes}</span>
         <button class="fdel" onclick="event.stopPropagation();openRen(${f.id})" title="Renomear">✏️</button>
@@ -696,7 +709,7 @@ function renderFolders(){
 /* ── TIRA DE SUBPASTAS (mobile) ── */
 function renderSFStrip(){
   const strip = document.getElementById('sf-strip');
-  if(!activeFId){ strip.innerHTML=''; return; }
+  if(!activeFId || !expandedFIds[activeFId]){ strip.innerHTML=''; return; }
   const folder = folders.find(f=>f.id===activeFId);
   if(!folder){ strip.innerHTML=''; return; }
   const sfs = folder.subfolders||[];
@@ -711,11 +724,23 @@ function renderSFStrip(){
 
 /* ── SUBFOLDER CRUD ── */
 function selF(id){
-  activeFId=id; activeSFId=null;
+  if(activeFId===id){
+    // Clicou na pasta já ativa → alterna expansão
+    expandedFIds[id] = !expandedFIds[id];
+    if(!expandedFIds[id]) activeSFId=null;
+  } else {
+    activeFId=id; activeSFId=null;
+    expandedFIds[id]=true;   // abre automaticamente ao selecionar
+  }
+  renderFolders(); renderNotes();
+}
+function toggleExpand(id){
+  expandedFIds[id]=!expandedFIds[id];
+  if(!expandedFIds[id] && activeFId===id) activeSFId=null;
   renderFolders(); renderNotes();
 }
 function selSF(fId, sfId){
-  activeFId=fId; activeSFId=sfId;
+  activeFId=fId; activeSFId=sfId; expandedFIds[fId]=true;
   renderFolders(); renderNotes();
 }
 
