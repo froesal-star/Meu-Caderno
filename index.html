@@ -37,7 +37,7 @@
   --bg:#f0ede8;--surf:#fff;--surf2:#fafaf7;--brd:#e0ddd6;
   --acc:#3d6b4f;--accl:#eaf3ee;--acch:#2f5340;
   --txt:#2c2c2c;--mut:#90908a;--red:#c0392b;--ylw:#d4820a;
-  --r:10px;--sh:0 2px 14px rgba(0,0,0,.08);--sw:220px;
+  --r:10px;--sh:0 2px 14px rgba(0,0,0,.08);--sw:230px;
 }
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
 .app{display:flex;flex-direction:column;height:100vh;max-width:1100px;margin:0 auto;padding:16px;gap:10px}
@@ -87,18 +87,35 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .fdel:hover{color:var(--red);background:#fdecea}
 .fi:hover .fdel{display:inline-flex}
 
-/* ── DRAG & DROP ── */
+/* ── DRAG & DROP (opera no .f-group) ── */
 .drag-handle{flex-shrink:0;cursor:grab;color:#c0bdb7;font-size:13px;line-height:1;padding:0 4px 0 0;user-select:none;touch-action:none}
 .drag-handle:active{cursor:grabbing}
-.fi.dnd-src{opacity:.3;background:#ede9e3}
-.fi.dnd-above{border-top:2.5px solid var(--acc);margin-top:-1px}
-.fi.dnd-below{border-bottom:2.5px solid var(--acc);margin-bottom:-1px}
+.f-group.dnd-src > .fi{opacity:.3;background:#ede9e3}
+.f-group.dnd-src .sf-section{opacity:.3}
+.f-group.dnd-above{border-top:2.5px solid var(--acc)}
+.f-group.dnd-below{border-bottom:2.5px solid var(--acc)}
 /* ghost flutuante no touch */
 .dnd-ghost-el{position:fixed;pointer-events:none;z-index:9999;opacity:.88;
   background:var(--surf);border:1.5px solid var(--acc);border-radius:8px;
   padding:9px 10px;font-size:.87rem;font-weight:700;color:var(--acc);
   box-shadow:0 6px 24px rgba(0,0,0,.18);white-space:nowrap;
   display:flex;align-items:center;gap:8px;transform:scale(1.04)}
+
+/* ── SUBPASTAS (desktop) ── */
+.sf-section{}
+.fi.sf-fi{padding-left:20px;font-size:.84rem;color:var(--txt)}
+.fi.sf-fi.active{background:var(--accl);color:var(--acc);font-weight:700}
+.sf-arrow{flex-shrink:0;color:var(--mut);font-size:.7rem;margin-right:2px}
+.sf-add-row{display:flex;gap:4px;padding:3px 8px 7px 28px}
+.sf-add-row input{flex:1;min-width:0;padding:5px 8px;border:1.5px dashed var(--brd);border-radius:7px;font-size:.78rem;background:#fff;color:var(--txt);outline:none}
+.sf-add-row input:focus{border-color:var(--acc);border-style:solid}
+.sf-add-row button{flex-shrink:0;width:26px;height:26px;background:var(--accl);color:var(--acc);border:1.5px solid #c8e6d4;border-radius:6px;cursor:pointer;font-size:.88rem;display:flex;align-items:center;justify-content:center}
+.sf-add-row button:hover{background:var(--acc);color:#fff}
+
+/* ── TIRA DE SUBPASTAS (mobile) ── */
+.sf-strip{display:none}
+
+/* ── PAINEL DE NOTAS ── */
 .npanel{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 .nph{padding:12px 18px;border-bottom:1px solid var(--brd);display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0;background:#fff;min-height:56px}
 .nph h2{font-size:.93rem;font-weight:700;flex:1;min-width:80px}
@@ -197,10 +214,8 @@ textarea.nta:focus{border-color:var(--acc)}
   .atb{flex-direction:column;align-items:stretch}
   .ati{padding:14px 14px}
 
-  /* Layout vertical: sidebar em cima, painel embaixo */
   .nl{flex-direction:column}
 
-  /* Sidebar vira uma faixa horizontal de chips */
   .sidebar{
     width:100%;min-width:100%;
     border-right:none;
@@ -219,14 +234,10 @@ textarea.nta:focus{border-color:var(--acc)}
     display:flex;align-items:center;
   }
   .sbh h3{display:none;margin:0}
-  .nff{
-    flex-direction:row;gap:4px;
-    align-items:center;
-  }
+  .nff{flex-direction:row;gap:4px;align-items:center}
   .nff input{width:110px;padding:5px 7px;font-size:.78rem}
   .nff button{width:28px;height:28px;font-size:.85rem}
 
-  /* Lista de pastas vira scroll horizontal */
   .flist{
     display:flex;flex-direction:row;flex-wrap:nowrap;
     overflow-x:auto;overflow-y:hidden;
@@ -235,6 +246,9 @@ textarea.nta:focus{border-color:var(--acc)}
     scrollbar-width:none;
   }
   .flist::-webkit-scrollbar{display:none}
+
+  /* No mobile o f-group vira inline-flex horizontal */
+  .f-group{display:contents}
   .fi{
     flex-shrink:0;
     padding:5px 12px;
@@ -246,9 +260,64 @@ textarea.nta:focus{border-color:var(--acc)}
   }
   .fi.active{border-color:var(--acc)}
   .fi .fcnt{display:none}
-  .fi:hover .fdel{display:none} /* esconde ações de pasta no chip */
+  .fi:hover .fdel{display:none}
+  /* Esconde subpastas inline no mobile */
+  .sf-section{display:none}
 
-  /* Painel de notas ocupa o resto */
+  /* Tira de subpastas mobile — abaixo do flist */
+  .sf-strip{
+    display:flex;
+    flex-direction:row;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    overflow-y:hidden;
+    padding:4px 8px 5px;
+    gap:5px;
+    border-top:1px solid var(--brd);
+    background:#f5f2ed;
+    scrollbar-width:none;
+    width:100%;
+    flex-shrink:0;
+  }
+  .sf-strip::-webkit-scrollbar{display:none}
+  .sf-chip{
+    flex-shrink:0;
+    padding:4px 10px;
+    border-radius:14px;
+    border:1.5px solid var(--brd);
+    background:var(--surf);
+    font-size:.75rem;
+    cursor:pointer;
+    white-space:nowrap;
+    color:var(--txt);
+  }
+  .sf-chip.active{border-color:var(--acc);background:var(--accl);color:var(--acc);font-weight:700}
+  .sf-chip:hover{background:#ede9e3}
+  .sf-mob-in{
+    flex-shrink:0;
+    width:115px;
+    padding:4px 8px;
+    border:1.5px dashed var(--brd);
+    border-radius:14px;
+    font-size:.74rem;
+    background:#fff;
+    color:var(--txt);
+    outline:none;
+  }
+  .sf-mob-in:focus{border-color:var(--acc);border-style:solid}
+  .sf-mob-btn{
+    flex-shrink:0;
+    width:24px;height:24px;
+    background:var(--accl);
+    color:var(--acc);
+    border:1.5px solid #c8e6d4;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:.85rem;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .sf-mob-btn:hover{background:var(--acc);color:#fff}
+
   .npanel{flex:1;min-height:0}
   .nph{padding:10px 14px;flex-wrap:wrap;gap:7px}
   .nph h2{font-size:.88rem}
@@ -287,7 +356,7 @@ textarea.nta:focus{border-color:var(--acc)}
     <!-- NOTAS -->
     <div id="tab-notes" class="tp active">
       <div class="nl">
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar-el">
           <div class="sbh">
             <h3>Pastas</h3>
             <div class="nff">
@@ -296,7 +365,10 @@ textarea.nta:focus{border-color:var(--acc)}
               <button onclick="createFolder()">＋</button>
             </div>
           </div>
+          <!-- lista de pastas (desktop: vertical; mobile: horizontal chips) -->
           <div class="flist" id="flist"></div>
+          <!-- tira de subpastas — só visível no mobile -->
+          <div class="sf-strip" id="sf-strip"></div>
         </div>
         <div class="npanel">
           <div class="nph" id="nph">
@@ -338,10 +410,10 @@ textarea.nta:focus{border-color:var(--acc)}
   </div>
 </div>
 
-<!-- Modal renomear pasta -->
+<!-- Modal renomear pasta / subpasta -->
 <div class="mov" id="ren-mov">
   <div class="modal">
-    <h3>✏️ Renomear pasta</h3>
+    <h3 id="ren-title">✏️ Renomear pasta</h3>
     <input type="text" id="ren-in" maxlength="40"
       onkeydown="if(event.key==='Enter')doRename()"/>
     <div class="mact">
@@ -356,17 +428,27 @@ textarea.nta:focus{border-color:var(--acc)}
 let folders     = [];
 let actionsData = [];
 let activeFId   = null;
+let activeSFId  = null;   // id da subpasta ativa (null = nível de pasta)
 let colState    = {};
 let renFId      = null;
+let renSFId     = null;   // se preenchido, estamos renomeando subpasta
 let editAId     = null;
-let _writing    = false;   // evita loop: write → onValue → write
+let _writing    = false;
 let saveTimer   = null;
 
-let nxtF = 1, nxtA = 1, nxtN = 1;
+let nxtF = 1, nxtA = 1, nxtN = 1, nxtSF = 1;
+
 function recomputeCounters(){
-  nxtF = folders.length ? Math.max(...folders.map(f=>f.id))+1 : 1;
-  nxtA = actionsData.length ? Math.max(...actionsData.map(a=>a.id))+1 : 1;
-  nxtN = 1; folders.forEach(f=>(f.notes||[]).forEach(n=>{ if(n.id>=nxtN) nxtN=n.id+1; }));
+  nxtF  = folders.length ? Math.max(...folders.map(f=>f.id))+1 : 1;
+  nxtA  = actionsData.length ? Math.max(...actionsData.map(a=>a.id))+1 : 1;
+  nxtN  = 1; nxtSF = 1;
+  folders.forEach(f=>{
+    (f.notes||[]).forEach(n=>{ if(n.id>=nxtN) nxtN=n.id+1; });
+    (f.subfolders||[]).forEach(sf=>{
+      if(sf.id>=nxtSF) nxtSF=sf.id+1;
+      (sf.notes||[]).forEach(n=>{ if(n.id>=nxtN) nxtN=n.id+1; });
+    });
+  });
 }
 
 /* ── UTILS ── */
@@ -374,13 +456,24 @@ function today(){ return new Date().toISOString().slice(0,10); }
 function fmtD(iso){ if(!iso)return''; const[y,m,d]=iso.split('-'); return`${d}/${m}/${y}`; }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;'); }
 
+/* Retorna o target (pasta ou subpasta) e as notas da seleção atual */
+function getActiveTarget(){
+  const folder = folders.find(f=>f.id===activeFId);
+  if(!folder) return null;
+  if(activeSFId){
+    const sf = (folder.subfolders||[]).find(sf=>sf.id===activeSFId);
+    return sf ? {folder, sf, notes:sf.notes||(sf.notes=[])} : null;
+  }
+  return {folder, sf:null, notes:folder.notes||(folder.notes=[])};
+}
+
 /* ── SYNC STATUS ── */
 function setSS(type, label){
   const b=document.getElementById('sync-badge'), l=document.getElementById('sync-label');
   b.className='sync-badge '+type; l.textContent=label;
 }
 
-/* ── FIREBASE: escrever para o banco ── */
+/* ── FIREBASE: escrever ── */
 function fbSave(){
   if(!window._caderno_set) return;
   clearTimeout(saveTimer);
@@ -394,24 +487,28 @@ function fbSave(){
   }, 600);
 }
 
-/* ── FIREBASE: ouvir mudanças em tempo real ── */
+/* ── FIREBASE: ouvir ── */
 function fbListen(){
   const dbRef = window._caderno_ref(window._caderno_db, 'meuCaderno');
   window._caderno_on(dbRef, snap => {
-    if(_writing) return;   // ignorar eco da nossa própria escrita
+    if(_writing) return;
     const data = snap.val();
     if(data){
       folders     = data.folders     || [];
       actionsData = data.actions     || [];
-    } else {
-      // Banco vazio — sobe os dados atuais
-      fbSave(); return;
-    }
+    } else { fbSave(); return; }
     recomputeCounters();
-    // Mantém pasta ativa se ainda existir
-    if(activeFId && !folders.find(f=>f.id===activeFId))
+    // Valida pasta ativa
+    if(activeFId && !folders.find(f=>f.id===activeFId)){
       activeFId = folders.length ? folders[0].id : null;
+      activeSFId = null;
+    }
     if(!activeFId && folders.length) activeFId = folders[0].id;
+    // Valida subpasta ativa
+    if(activeSFId && activeFId){
+      const f = folders.find(f=>f.id===activeFId);
+      if(!f || !(f.subfolders||[]).find(sf=>sf.id===activeSFId)) activeSFId=null;
+    }
     renderFolders(); renderNotes(); renderActions();
     setSS('ok','Sincronizado');
   }, ()=>{ setSS('err','Sem conexão'); });
@@ -422,7 +519,6 @@ window.addEventListener('caderno_fb_ready', ()=>{
   document.getElementById('loader').style.display = 'none';
   fbListen();
 });
-// Timeout se Firebase não carregar
 setTimeout(()=>{
   const l = document.getElementById('loader');
   if(l.style.display !== 'none'){
@@ -438,8 +534,8 @@ function switchTab(t){
 }
 
 /* ── DRAG & DROP STATE ── */
-let _dndSrc = null;   // índice de origem
-let _touchDnd = null; // { srcIdx, ghostEl, startX, startY }
+let _dndSrc  = null;
+let _touchDnd = null;
 let _touchTimer = null;
 
 function _dndReorder(srcIdx, tgtIdx){
@@ -455,27 +551,27 @@ function dndStart(e, idx){
   _dndSrc = idx;
   e.dataTransfer.effectAllowed = 'move';
   e.dataTransfer.setData('text/plain', idx);
-  setTimeout(()=>{ const el=document.querySelectorAll('#flist .fi')[idx]; if(el)el.classList.add('dnd-src'); }, 0);
+  setTimeout(()=>{ const el=document.querySelectorAll('#flist .f-group')[idx]; if(el)el.classList.add('dnd-src'); }, 0);
 }
 function dndEnter(e, idx){
   e.preventDefault();
-  document.querySelectorAll('#flist .fi').forEach((el,i)=>{ el.classList.remove('dnd-above','dnd-below'); });
+  document.querySelectorAll('#flist .f-group').forEach(el=>{ el.classList.remove('dnd-above','dnd-below'); });
   if(_dndSrc===null||_dndSrc===idx) return;
-  const el=document.querySelectorAll('#flist .fi')[idx];
+  const el=document.querySelectorAll('#flist .f-group')[idx];
   if(!el) return;
   const mid = el.getBoundingClientRect().top + el.getBoundingClientRect().height/2;
   el.classList.add(e.clientY < mid ? 'dnd-above' : 'dnd-below');
 }
 function dndDrop(e, idx){
   e.preventDefault();
-  document.querySelectorAll('#flist .fi').forEach(el=>el.classList.remove('dnd-src','dnd-above','dnd-below'));
+  document.querySelectorAll('#flist .f-group').forEach(el=>el.classList.remove('dnd-src','dnd-above','dnd-below'));
   if(_dndSrc===null) return;
   const src=_dndSrc; _dndSrc=null;
   _dndReorder(src, idx);
 }
 function dndEnd(){
   _dndSrc=null;
-  document.querySelectorAll('#flist .fi').forEach(el=>el.classList.remove('dnd-src','dnd-above','dnd-below'));
+  document.querySelectorAll('#flist .f-group').forEach(el=>el.classList.remove('dnd-src','dnd-above','dnd-below'));
 }
 
 /* ── Mobile Touch DnD ── */
@@ -484,14 +580,14 @@ function _touchStart(e, idx){
   _touchTimer = setTimeout(()=>{
     _touchTimer=null;
     const t=e.touches[0];
-    const srcEl=document.querySelectorAll('#flist .fi')[idx];
     const ghost=document.createElement('div');
     ghost.className='dnd-ghost-el';
     ghost.innerHTML='⠿ '+esc(folders[idx].name);
     ghost.style.left=(t.clientX+12)+'px';
     ghost.style.top=(t.clientY-18)+'px';
     document.body.appendChild(ghost);
-    srcEl.classList.add('dnd-src');
+    const grp=document.querySelectorAll('#flist .f-group')[idx];
+    if(grp) grp.classList.add('dnd-src');
     _touchDnd={srcIdx:idx, ghostEl:ghost};
     navigator.vibrate&&navigator.vibrate(40);
   }, 450);
@@ -503,18 +599,17 @@ function _touchMove(e){
   const t=e.touches[0];
   _touchDnd.ghostEl.style.left=(t.clientX+12)+'px';
   _touchDnd.ghostEl.style.top=(t.clientY-18)+'px';
-  // Detecta alvo
   _touchDnd.ghostEl.style.display='none';
   const under=document.elementFromPoint(t.clientX, t.clientY);
   _touchDnd.ghostEl.style.display='';
-  const tgtEl=under?.closest('#flist .fi');
-  document.querySelectorAll('#flist .fi').forEach(el=>el.classList.remove('dnd-above','dnd-below'));
-  if(tgtEl){
-    const items=[...document.querySelectorAll('#flist .fi')];
-    const tgtIdx=items.indexOf(tgtEl);
+  const tgtGrp=under?.closest('#flist .f-group');
+  document.querySelectorAll('#flist .f-group').forEach(el=>el.classList.remove('dnd-above','dnd-below'));
+  if(tgtGrp){
+    const items=[...document.querySelectorAll('#flist .f-group')];
+    const tgtIdx=items.indexOf(tgtGrp);
     if(tgtIdx!==-1&&tgtIdx!==_touchDnd.srcIdx){
-      const mid=tgtEl.getBoundingClientRect().top+tgtEl.getBoundingClientRect().height/2;
-      tgtEl.classList.add(t.clientY<mid?'dnd-above':'dnd-below');
+      const mid=tgtGrp.getBoundingClientRect().top+tgtGrp.getBoundingClientRect().height/2;
+      tgtGrp.classList.add(t.clientY<mid?'dnd-above':'dnd-below');
       _touchDnd.tgtIdx=tgtIdx;
     }
   }
@@ -524,7 +619,7 @@ function _touchEnd(e){
   if(!_touchDnd) return;
   const {srcIdx, ghostEl, tgtIdx}=_touchDnd;
   ghostEl.remove();
-  document.querySelectorAll('#flist .fi').forEach(el=>el.classList.remove('dnd-src','dnd-above','dnd-below'));
+  document.querySelectorAll('#flist .f-group').forEach(el=>el.classList.remove('dnd-src','dnd-above','dnd-below'));
   _touchDnd=null;
   if(tgtIdx!==undefined&&tgtIdx!==srcIdx) _dndReorder(srcIdx, tgtIdx);
 }
@@ -534,65 +629,177 @@ function renderFolders(){
   const el=document.getElementById('flist');
   if(!folders.length){
     el.innerHTML=`<div style="padding:18px 10px;text-align:center;color:var(--mut);font-size:.8rem;line-height:1.7">Crie uma pasta.<br>Ex: nome de um<br>colega ou assunto.</div>`;
-    return;
+    renderSFStrip(); return;
   }
-  el.innerHTML=folders.map((f,i)=>`
-  <div class="fi ${f.id===activeFId?'active':''}"
-    draggable="true"
-    ondragstart="dndStart(event,${i})"
-    ondragenter="dndEnter(event,${i})"
-    ondragover="event.preventDefault()"
-    ondrop="dndDrop(event,${i})"
-    ondragend="dndEnd()"
-    onclick="selF(${f.id})">
-    <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
-    <span class="fname">${esc(f.name)}</span>
-    <span class="fcnt">${(f.notes||[]).length}</span>
-    <button class="fdel" onclick="event.stopPropagation();openRen(${f.id})" title="Renomear">✏️</button>
-    <button class="fdel" onclick="event.stopPropagation();delF(${f.id})" title="Excluir">✕</button>
-  </div>`).join('');
 
-  // Listeners de touch (não podem ser inline por causa do passive)
-  document.querySelectorAll('#flist .fi').forEach((el,i)=>{
-    el.addEventListener('touchstart', e=>_touchStart(e,i), {passive:true});
-    el.addEventListener('touchmove',  e=>_touchMove(e),   {passive:false});
-    el.addEventListener('touchend',   e=>_touchEnd(e),    {passive:true});
-    el.addEventListener('touchcancel',e=>{ clearTimeout(_touchTimer); if(_touchDnd){_touchDnd.ghostEl.remove();_touchDnd=null;} document.querySelectorAll('#flist .fi').forEach(x=>x.classList.remove('dnd-src','dnd-above','dnd-below')); },{passive:true});
+  el.innerHTML = folders.map((f,i)=>{
+    const isActive = f.id===activeFId;
+    const sfs = f.subfolders||[];
+    const totalNotes = (f.notes||[]).length + sfs.reduce((s,sf)=>s+(sf.notes||[]).length,0);
+
+    // Subpastas inline (visível apenas no desktop)
+    const sfHtml = isActive ? `
+      <div class="sf-section">
+        ${sfs.map(sf=>`
+          <div class="fi sf-fi ${activeSFId===sf.id?'active':''}"
+            onclick="selSF(${f.id},${sf.id})">
+            <span class="sf-arrow">↳</span>
+            <span class="fname">${esc(sf.name)}</span>
+            <span class="fcnt">${(sf.notes||[]).length}</span>
+            <button class="fdel" onclick="event.stopPropagation();openRenSF(${f.id},${sf.id})" title="Renomear">✏️</button>
+            <button class="fdel" onclick="event.stopPropagation();delSF(${f.id},${sf.id})" title="Excluir">✕</button>
+          </div>`).join('')}
+        <div class="sf-add-row">
+          <input id="sfi-${f.id}" type="text" placeholder="Nova subpasta…" maxlength="40"
+            onclick="event.stopPropagation()"
+            onkeydown="if(event.key==='Enter')createSubfolder(${f.id})"/>
+          <button onclick="createSubfolder(${f.id})">＋</button>
+        </div>
+      </div>` : '';
+
+    return `<div class="f-group"
+      ondragenter="dndEnter(event,${i})"
+      ondragover="event.preventDefault()"
+      ondrop="dndDrop(event,${i})"
+      ondragend="dndEnd()">
+      <div class="fi ${isActive&&!activeSFId?'active':''}"
+        draggable="true"
+        ondragstart="dndStart(event,${i})"
+        onclick="selF(${f.id})">
+        <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
+        <span class="fname">${esc(f.name)}</span>
+        <span class="fcnt">${totalNotes}</span>
+        <button class="fdel" onclick="event.stopPropagation();openRen(${f.id})" title="Renomear">✏️</button>
+        <button class="fdel" onclick="event.stopPropagation();delF(${f.id})" title="Excluir">✕</button>
+      </div>
+      ${sfHtml}
+    </div>`;
+  }).join('');
+
+  // Touch DnD — listener no .fi principal de cada grupo
+  document.querySelectorAll('#flist .f-group').forEach((grp,i)=>{
+    const mainFi = grp.querySelector('.fi:not(.sf-fi)');
+    if(!mainFi) return;
+    mainFi.addEventListener('touchstart', e=>_touchStart(e,i), {passive:true});
+    mainFi.addEventListener('touchmove',  e=>_touchMove(e),   {passive:false});
+    mainFi.addEventListener('touchend',   e=>_touchEnd(e),    {passive:true});
+    mainFi.addEventListener('touchcancel',()=>{
+      clearTimeout(_touchTimer);
+      if(_touchDnd){_touchDnd.ghostEl.remove();_touchDnd=null;}
+      document.querySelectorAll('#flist .f-group').forEach(x=>x.classList.remove('dnd-src','dnd-above','dnd-below'));
+    },{passive:true});
   });
+
+  renderSFStrip();
 }
 
+/* ── TIRA DE SUBPASTAS (mobile) ── */
+function renderSFStrip(){
+  const strip = document.getElementById('sf-strip');
+  if(!activeFId){ strip.innerHTML=''; return; }
+  const folder = folders.find(f=>f.id===activeFId);
+  if(!folder){ strip.innerHTML=''; return; }
+  const sfs = folder.subfolders||[];
+  const chips = sfs.map(sf=>
+    `<span class="sf-chip ${activeSFId===sf.id?'active':''}" onclick="selSF(${folder.id},${sf.id})">↳ ${esc(sf.name)}</span>`
+  ).join('');
+  strip.innerHTML = chips +
+    `<input id="sfi-mob-${folder.id}" class="sf-mob-in" type="text" placeholder="+ subpasta…" maxlength="40"
+       onkeydown="if(event.key==='Enter')createSubfolderMob(${folder.id})"/>` +
+    `<button class="sf-mob-btn" onclick="createSubfolderMob(${folder.id})">＋</button>`;
+}
+
+/* ── SUBFOLDER CRUD ── */
+function selF(id){
+  activeFId=id; activeSFId=null;
+  renderFolders(); renderNotes();
+}
+function selSF(fId, sfId){
+  activeFId=fId; activeSFId=sfId;
+  renderFolders(); renderNotes();
+}
+
+function _doCreateSubfolder(parentFId, name){
+  const folder=folders.find(f=>f.id===parentFId); if(!folder)return;
+  if(!folder.subfolders) folder.subfolders=[];
+  const sf={id:nxtSF++, name, notes:[]};
+  folder.subfolders.push(sf);
+  activeFId=parentFId; activeSFId=sf.id;
+  renderFolders(); renderNotes(); fbSave();
+}
+function createSubfolder(parentFId){
+  const inp=document.getElementById('sfi-'+parentFId); if(!inp)return;
+  const name=inp.value.trim(); if(!name){inp.focus();return;}
+  inp.value=''; _doCreateSubfolder(parentFId, name);
+}
+function createSubfolderMob(parentFId){
+  const inp=document.getElementById('sfi-mob-'+parentFId); if(!inp)return;
+  const name=inp.value.trim(); if(!name){inp.focus();return;}
+  inp.value=''; _doCreateSubfolder(parentFId, name);
+}
+
+function delSF(parentFId, sfId){
+  const folder=folders.find(f=>f.id===parentFId); if(!folder)return;
+  const sf=(folder.subfolders||[]).find(sf=>sf.id===sfId); if(!sf)return;
+  if(!confirm(`Excluir a subpasta "${sf.name}" e todas as anotações?`))return;
+  folder.subfolders=folder.subfolders.filter(sf=>sf.id!==sfId);
+  if(activeSFId===sfId){ activeSFId=null; }
+  renderFolders(); renderNotes(); fbSave();
+}
+
+function openRenSF(parentFId, sfId){
+  renFId=parentFId; renSFId=sfId;
+  const folder=folders.find(f=>f.id===parentFId);
+  const sf=folder&&(folder.subfolders||[]).find(sf=>sf.id===sfId);
+  document.getElementById('ren-title').textContent='✏️ Renomear subpasta';
+  document.getElementById('ren-in').value=sf?sf.name:'';
+  document.getElementById('ren-mov').classList.add('open');
+  setTimeout(()=>document.getElementById('ren-in').focus(),50);
+}
+
+/* ── PASTAS CRUD ── */
 function createFolder(){
   const inp=document.getElementById('nfi'), name=inp.value.trim();
   if(!name){ inp.focus(); return; }
-  const f={id:nxtF++, name, notes:[]};
-  folders.push(f); inp.value=''; selF(f.id); fbSave();
+  const f={id:nxtF++, name, notes:[], subfolders:[]};
+  folders.push(f); inp.value='';
+  activeFId=f.id; activeSFId=null;
+  renderFolders(); renderNotes(); fbSave();
 }
 
 function delF(id){
   const f=folders.find(f=>f.id===id); if(!f)return;
   if(!confirm(`Excluir a pasta "${f.name}" e todas as anotações?`))return;
   folders=folders.filter(f=>f.id!==id);
-  if(activeFId===id) activeFId=folders.length?folders[0].id:null;
+  if(activeFId===id){ activeFId=folders.length?folders[0].id:null; activeSFId=null; }
   renderFolders(); renderNotes(); fbSave();
 }
 
 function openRen(id){
-  renFId=id; const f=folders.find(f=>f.id===id);
+  renFId=id; renSFId=null;
+  const f=folders.find(f=>f.id===id);
+  document.getElementById('ren-title').textContent='✏️ Renomear pasta';
   document.getElementById('ren-in').value=f?f.name:'';
   document.getElementById('ren-mov').classList.add('open');
   setTimeout(()=>document.getElementById('ren-in').focus(),50);
 }
-function closeRen(){ renFId=null; document.getElementById('ren-mov').classList.remove('open'); }
+function closeRen(){ renFId=null; renSFId=null; document.getElementById('ren-mov').classList.remove('open'); }
 function doRename(){
   const name=document.getElementById('ren-in').value.trim(); if(!name)return;
-  const f=folders.find(f=>f.id===renFId); if(f) f.name=name;
-  closeRen(); renderFolders(); if(activeFId===renFId) renderNotes(); fbSave();
+  if(renSFId!==null){
+    // subpasta
+    const folder=folders.find(f=>f.id===renFId);
+    const sf=folder&&(folder.subfolders||[]).find(sf=>sf.id===renSFId);
+    if(sf) sf.name=name;
+  } else {
+    // pasta
+    const f=folders.find(f=>f.id===renFId); if(f) f.name=name;
+  }
+  closeRen(); renderFolders(); renderNotes(); fbSave();
 }
 document.getElementById('ren-mov').addEventListener('click',e=>{if(e.target===e.currentTarget)closeRen();});
 
 /* ── PAINEL DE NOTAS ── */
-function selF(id){ activeFId=id; renderFolders(); renderNotes(); }
-
 function renderNotes(){
   const hdr=document.getElementById('nph'), body=document.getElementById('nbody');
   if(!activeFId){
@@ -600,22 +807,31 @@ function renderNotes(){
     body.innerHTML=''; return;
   }
   const folder=folders.find(f=>f.id===activeFId); if(!folder)return;
+  const target = getActiveTarget(); if(!target)return;
+  const {notes} = target;
+
+  // Cabeçalho com breadcrumb
+  let titleHtml = activeSFId
+    ? `${esc(folder.name)} <span style="color:var(--mut);font-weight:400;font-size:.85em">›</span> ${esc(target.sf.name)}`
+    : esc(folder.name);
+
   const pfd=document.getElementById('nfd'); const fd=pfd?pfd.value:'';
   hdr.innerHTML=`
-    <h2>${esc(folder.name)}</h2>
+    <h2>${titleHtml}</h2>
     <div class="ha">
       <input type="date" id="nfd" class="fin bsm" value="${esc(fd)}" oninput="renderNotes()"/>
       <button class="btn bo bsm" onclick="document.getElementById('nfd').value='';renderNotes()">Limpar</button>
       <button class="btn bp bsm" onclick="addNote()">＋ Nova anotação</button>
     </div>`;
+
   const fd2=document.getElementById('nfd').value;
-  let notes=[...(folder.notes||[])].sort((a,b)=>b.date.localeCompare(a.date));
-  if(fd2) notes=notes.filter(n=>n.date===fd2);
-  if(!notes.length){
+  let sorted=[...notes].sort((a,b)=>b.date.localeCompare(a.date));
+  if(fd2) sorted=sorted.filter(n=>n.date===fd2);
+  if(!sorted.length){
     body.innerHTML=`<div class="empty"><div class="ei">📝</div><p>${fd2?'Nenhuma anotação nesta data.':'Esta pasta está vazia.<br>Clique em <strong>+ Nova anotação</strong>.'}</p></div>`;
     return;
   }
-  body.innerHTML=notes.map(n=>{
+  body.innerHTML=sorted.map(n=>{
     const c=!!colState[n.id];
     const pv=c&&n.text?n.text.slice(0,70)+(n.text.length>70?'…':''):'';
     return`<div class="ne ${c?'col':''}" id="ne-${n.id}">
@@ -636,13 +852,12 @@ function renderNotes(){
 }
 
 function addNote(){
-  if(!activeFId)return;
-  const folder=folders.find(f=>f.id===activeFId); if(!folder)return;
-  if(!folder.notes) folder.notes=[];
-  const d=today(), ex=folder.notes.find(n=>n.date===d);
+  const target=getActiveTarget(); if(!target)return;
+  const {notes}=target;
+  const d=today(), ex=notes.find(n=>n.date===d);
   if(ex){ colState[ex.id]=false; renderNotes(); focusNote(ex.id); return; }
   const n={id:nxtN++, date:d, text:''};
-  folder.notes.unshift(n); colState[n.id]=false;
+  notes.unshift(n); colState[n.id]=false;
   renderFolders(); renderNotes(); focusNote(n.id); fbSave();
 }
 function focusNote(id){
@@ -653,13 +868,14 @@ function focusNote(id){
 }
 function delNote(id){
   if(!confirm('Excluir esta anotação?'))return;
-  const folder=folders.find(f=>f.id===activeFId); if(!folder)return;
-  folder.notes=folder.notes.filter(n=>n.id!==id);
+  const target=getActiveTarget(); if(!target)return;
+  if(target.sf) target.sf.notes=target.sf.notes.filter(n=>n.id!==id);
+  else target.folder.notes=target.folder.notes.filter(n=>n.id!==id);
   renderFolders(); renderNotes(); fbSave();
 }
 function noteChg(id,txt){
-  const folder=folders.find(f=>f.id===activeFId); if(!folder)return;
-  const n=(folder.notes||[]).find(n=>n.id===id); if(n)n.text=txt;
+  const target=getActiveTarget(); if(!target)return;
+  const n=(target.notes||[]).find(n=>n.id===id); if(n)n.text=txt;
   fbSave();
 }
 function togNote(id){
@@ -667,8 +883,8 @@ function togNote(id){
   const el=document.getElementById('ne-'+id); if(!el)return;
   el.classList.toggle('col',colState[id]);
   if(colState[id]){
-    const folder=folders.find(f=>f.id===activeFId);
-    const n=folder&&(folder.notes||[]).find(n=>n.id===id);
+    const target=getActiveTarget();
+    const n=target&&(target.notes||[]).find(n=>n.id===id);
     if(n&&n.text){
       let p=el.querySelector('.prev');
       if(!p){ p=document.createElement('span'); p.className='prev'; el.querySelector('.neh').insertBefore(p,el.querySelector('.chev')); }
