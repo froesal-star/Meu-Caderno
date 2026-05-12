@@ -895,24 +895,24 @@ async function sendActionEmail(action, contact){
   }
 
   // Envia via Google Form relay → Apps Script onFormSubmit → GmailApp.sendEmail
-  // Google Forms são acessíveis publicamente, sem restrição de org
+  // Envio via Apps Script Web App → GmailApp.sendEmail
   try{
-    const formUrl=`https://docs.google.com/forms/d/${emailCfg.formId}/formResponse`;
+    const webAppUrl='https://script.google.com/a/macros/mercadolivre.com/s/AKfycbzb16eArtFzrPHbPx6GyaYLDb13Cv142tn8J2PcZp55N14VvMRu-ewaMFDdisLv9QjM/exec';
     const payload=JSON.stringify({
-      to:      contact.email,
-      subject: `Nova ação para você: ${action.text}`,
-      html:    buildEmailHTML(action, contact)
+      to:        contact.email,
+      subject:   `Nova ação para você: ${action.text}`,
+      html:      buildEmailHTML(action, contact)
     });
-    const params=new URLSearchParams();
-    params.append(`entry.${emailCfg.entryId}`, payload);
-    await fetch(formUrl, {
-      method: 'POST',
-      mode:   'no-cors',   // Google Forms redireciona após submit — no-cors ignora o redirect
-      body:   params
+    await fetch(webAppUrl, {
+      method:      'POST',
+      mode:        'no-cors',
+      credentials: 'include',
+      headers:     {'Content-Type': 'application/json'},
+      body:        payload
     });
-    return 'sent';  // no-cors = resposta opaca; assumimos sucesso se não houve erro de rede
+    return 'sent'; // no-cors = resposta opaca; assumimos sucesso se não houve erro de rede
   }catch(err){
-    console.error('Form relay email error:',err);
+    console.error('Web App email error:',err);
     return 'error';
   }
 }
