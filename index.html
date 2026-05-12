@@ -5,12 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Meu Caderno</title>
 
-<!-- Firebase SDK — mesmo projeto do SpendWise -->
+<!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, onValue, set }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
   const firebaseConfig = {
     apiKey: "AIzaSyDB21rD8B3f_b2rLcIiulAqgrZIYdyPLvI",
     authDomain: "controle-de-custos-39c67.firebaseapp.com",
@@ -20,10 +19,8 @@
     messagingSenderId: "320742412317",
     appId: "1:320742412317:web:acc6d8fdcfe5597e3c36f4"
   };
-
   const app = initializeApp(firebaseConfig);
   const db  = getDatabase(app);
-
   window._caderno_db  = db;
   window._caderno_ref = ref;
   window._caderno_set = set;
@@ -31,12 +28,14 @@
   window.dispatchEvent(new Event("caderno_fb_ready"));
 </script>
 
+<!-- Sem dependências externas para email — usa Google Apps Script -->
+
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#f0ede8;--surf:#fff;--surf2:#fafaf7;--brd:#e0ddd6;
   --acc:#3d6b4f;--accl:#eaf3ee;--acch:#2f5340;
-  --txt:#2c2c2c;--mut:#90908a;--red:#c0392b;--ylw:#d4820a;
+  --txt:#2c2c2c;--mut:#90908a;--red:#c0392b;--ylw:#d4820a;--blu:#2563eb;
   --r:10px;--sh:0 2px 14px rgba(0,0,0,.08);--sw:230px;
 }
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
@@ -87,22 +86,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .fdel:hover{color:var(--red);background:#fdecea}
 .fi:hover .fdel{display:inline-flex}
 
-/* ── DRAG & DROP (opera no .f-group) ── */
+/* ── DRAG & DROP ── */
 .drag-handle{flex-shrink:0;cursor:grab;color:#c0bdb7;font-size:13px;line-height:1;padding:0 4px 0 0;user-select:none;touch-action:none}
 .drag-handle:active{cursor:grabbing}
 .f-group.dnd-src > .fi{opacity:.3;background:#ede9e3}
 .f-group.dnd-src .sf-section{opacity:.3}
 .f-group.dnd-above{border-top:2.5px solid var(--acc)}
 .f-group.dnd-below{border-bottom:2.5px solid var(--acc)}
-/* ghost flutuante no touch */
-.dnd-ghost-el{position:fixed;pointer-events:none;z-index:9999;opacity:.88;
-  background:var(--surf);border:1.5px solid var(--acc);border-radius:8px;
-  padding:9px 10px;font-size:.87rem;font-weight:700;color:var(--acc);
-  box-shadow:0 6px 24px rgba(0,0,0,.18);white-space:nowrap;
-  display:flex;align-items:center;gap:8px;transform:scale(1.04)}
+.dnd-ghost-el{position:fixed;pointer-events:none;z-index:9999;opacity:.88;background:var(--surf);border:1.5px solid var(--acc);border-radius:8px;padding:9px 10px;font-size:.87rem;font-weight:700;color:var(--acc);box-shadow:0 6px 24px rgba(0,0,0,.18);white-space:nowrap;display:flex;align-items:center;gap:8px;transform:scale(1.04)}
 
-/* ── SUBPASTAS (desktop) ── */
-/* botão +/− estilo agrupamento Excel */
+/* ── SUBPASTAS ── */
 .f-toggle{flex-shrink:0;width:17px;height:17px;border:1.5px solid #c8c5be;border-radius:3px;background:#fff;color:#888;font-size:13px;font-weight:900;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;user-select:none;padding:0;transition:all .15s}
 .f-toggle:hover{border-color:var(--acc);color:var(--acc);background:var(--accl)}
 .fi.active .f-toggle{border-color:var(--acc);color:var(--acc)}
@@ -115,8 +108,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .sf-add-row input:focus{border-color:var(--acc);border-style:solid}
 .sf-add-row button{flex-shrink:0;width:26px;height:26px;background:var(--accl);color:var(--acc);border:1.5px solid #c8e6d4;border-radius:6px;cursor:pointer;font-size:.88rem;display:flex;align-items:center;justify-content:center}
 .sf-add-row button:hover{background:var(--acc);color:#fff}
-
-/* ── TIRA DE SUBPASTAS (mobile) ── */
 .sf-strip{display:none}
 
 /* ── PAINEL DE NOTAS ── */
@@ -144,9 +135,13 @@ textarea.nta:focus{border-color:var(--acc)}
 .atb{display:flex;gap:11px;align-items:flex-end;flex-wrap:wrap;flex-shrink:0}
 .fg{display:flex;flex-direction:column;gap:4px}
 .fg label{font-size:.74rem;color:var(--mut);font-weight:600}
-.fg input{padding:8px 12px;border:1.5px solid var(--brd);border-radius:8px;font-size:.85rem;background:var(--surf2);color:var(--txt);outline:none;transition:border .15s}
-.fg input:focus{border-color:var(--acc)}
+.fg input,.fg select{padding:8px 12px;border:1.5px solid var(--brd);border-radius:8px;font-size:.85rem;background:var(--surf2);color:var(--txt);outline:none;transition:border .15s}
+.fg input:focus,.fg select:focus{border-color:var(--acc)}
 .fg input[type="text"]{min-width:250px}
+.fg select{min-width:150px;cursor:pointer}
+.atb-tools{display:flex;gap:8px;align-items:center;margin-left:auto;align-self:flex-end}
+.icon-btn{width:36px;height:36px;border-radius:8px;border:1.5px solid var(--brd);background:var(--surf2);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;color:var(--mut);transition:all .15s}
+.icon-btn:hover{border-color:var(--acc);color:var(--acc);background:var(--accl)}
 .sbar{display:flex;gap:16px;padding:9px 13px;background:var(--accl);border-radius:8px;border:1px solid #c8e6d4;flex-shrink:0;flex-wrap:wrap}
 .st{font-size:.79rem;color:var(--acc);font-weight:600}
 .st span{color:var(--mut);font-weight:400}
@@ -163,7 +158,7 @@ textarea.nta:focus{border-color:var(--acc)}
 .atxt:hover{color:var(--acc)}
 .ai.done .atxt{text-decoration:line-through;color:var(--mut);cursor:default}
 .ai.done .atxt:hover{color:var(--mut)}
-.ameta{display:flex;gap:11px;margin-top:5px;flex-wrap:wrap}
+.ameta{display:flex;gap:11px;margin-top:5px;flex-wrap:wrap;align-items:center}
 .mb{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;color:var(--mut);font-weight:500}
 .mb.due{color:var(--ylw)}
 .mb.ov{color:var(--red);font-weight:700}
@@ -178,6 +173,18 @@ textarea.nta:focus{border-color:var(--acc)}
 .aedit-ok:hover{background:var(--acch)}
 .aedit-cn{padding:5px 8px;background:none;color:var(--mut);border:1.5px solid var(--brd);border-radius:7px;font-size:.8rem;cursor:pointer}
 .aedit-cn:hover{background:#ede9e3}
+
+/* ── BADGE DE RESPONSÁVEL ── */
+.a-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:600;background:#e8f0fe;color:#2563eb;border:1px solid #c7d7fd;flex-shrink:0}
+.a-badge.sent{background:#eaf3ee;color:var(--acc);border-color:#c8e6d4}
+.a-resp-box{margin-top:8px;padding:8px 11px;border-radius:7px;background:#f0f7ff;border:1px solid #c7d7fd;font-size:.78rem;color:#1e40af}
+.a-resp-box strong{display:block;margin-bottom:3px;font-size:.72rem;color:#64748b;text-transform:uppercase;letter-spacing:.04em}
+.resend-btn{background:none;border:none;cursor:pointer;font-size:.72rem;color:var(--mut);text-decoration:underline;padding:0;margin-left:6px}
+.resend-btn:hover{color:var(--acc)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e293b;color:#fff;padding:10px 20px;border-radius:8px;font-size:.85rem;z-index:9998;transition:transform .3s;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
 
 /* ── BOTÕES ── */
 .btn{padding:8px 16px;border:none;border-radius:8px;font-size:.83rem;font-weight:600;cursor:pointer;transition:background .15s,transform .1s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
@@ -196,15 +203,39 @@ textarea.nta:focus{border-color:var(--acc)}
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;color:var(--mut);height:100%}
 .empty .ei{font-size:2.6rem;margin-bottom:13px}
 .empty p{font-size:.88rem;line-height:1.6}
-.mov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;align-items:center;justify-content:center;padding:16px}
+.mov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;align-items:center;justify-content:center;padding:16px}
 .mov.open{display:flex}
-.modal{background:#fff;border-radius:14px;padding:24px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,0,0,.2)}
+.modal{background:#fff;border-radius:14px;padding:24px;width:100%;max-width:460px;box-shadow:0 8px 40px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto}
+.modal.wide{max-width:580px}
 .modal h3{font-size:1rem;font-weight:700;margin-bottom:13px}
-.modal input{width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:8px;font-size:.9rem;outline:none;margin-bottom:13px}
-.modal input:focus{border-color:var(--acc)}
-.mact{display:flex;justify-content:flex-end;gap:8px}
+.modal input,.modal textarea,.modal select{width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:8px;font-size:.9rem;outline:none;margin-bottom:11px;font-family:inherit}
+.modal input:focus,.modal textarea:focus,.modal select:focus{border-color:var(--acc)}
+.modal textarea{min-height:90px;resize:vertical}
+.mact{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
+.modal-note{font-size:.74rem;color:var(--mut);line-height:1.6;margin-bottom:12px;padding:10px 12px;background:var(--surf2);border-radius:8px;border:1px solid var(--brd)}
+.modal-note a{color:var(--acc)}
+.modal-note code{background:#e8e5e0;padding:1px 5px;border-radius:4px;font-size:.85em}
 
-/* Tela de carregamento */
+/* Contatos list */
+.c-list{display:flex;flex-direction:column;gap:7px;margin-bottom:14px;max-height:220px;overflow-y:auto}
+.c-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1.5px solid var(--brd);border-radius:8px;background:var(--surf2)}
+.c-av{width:32px;height:32px;border-radius:50%;background:var(--acc);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0}
+.c-info{flex:1;min-width:0}
+.c-name{font-size:.88rem;font-weight:600}
+.c-email{font-size:.73rem;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.c-del{background:none;border:none;cursor:pointer;color:#ccc;font-size:13px;padding:2px 5px;border-radius:4px}
+.c-del:hover{color:var(--red);background:#fdecea}
+.c-add-row{display:flex;gap:7px;margin-bottom:0}
+.c-add-row input{flex:1;padding:8px 10px;border:1.5px solid var(--brd);border-radius:7px;font-size:.83rem;background:#fff;outline:none;margin-bottom:0}
+.c-add-row input:focus{border-color:var(--acc)}
+
+/* Response modal (tela de resposta via link) */
+.resp-card{background:var(--surf2);border-radius:10px;padding:16px;margin-bottom:14px;border:1.5px solid var(--brd)}
+.resp-card h4{font-size:.92rem;font-weight:700;margin-bottom:8px}
+.resp-meta{display:flex;gap:12px;flex-wrap:wrap;font-size:.78rem;color:var(--mut)}
+.resp-meta span{display:inline-flex;align-items:center;gap:4px}
+
+/* Loader */
 #loader{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:9999}
 .loader-logo{font-size:48px}
 .loader-txt{font-size:14px;color:var(--mut);font-weight:600}
@@ -214,114 +245,33 @@ textarea.nta:focus{border-color:var(--acc)}
 /* ── MOBILE ── */
 @media(max-width:640px){
   .app{padding:10px;gap:8px}
-  .fg input[type="text"]{min-width:100%}
+  .fg input[type="text"],.fg select{min-width:100%}
   .atb{flex-direction:column;align-items:stretch}
-  .ati{padding:14px 14px}
-
+  .atb-tools{margin-left:0;justify-content:flex-end}
+  .ati{padding:14px}
   .nl{flex-direction:column}
-
-  .sidebar{
-    width:100%;min-width:100%;
-    border-right:none;
-    border-bottom:1.5px solid var(--brd);
-    flex-direction:row;
-    align-items:center;
-    flex-shrink:0;
-    overflow:hidden;
-    background:var(--surf2);
-  }
-  .sbh{
-    padding:8px 10px;
-    border-bottom:none;
-    border-right:1px solid var(--brd);
-    flex-shrink:0;
-    display:flex;align-items:center;
-  }
+  .sidebar{width:100%;min-width:100%;border-right:none;border-bottom:1.5px solid var(--brd);flex-direction:row;align-items:center;flex-shrink:0;overflow:hidden;background:var(--surf2)}
+  .sbh{padding:8px 10px;border-bottom:none;border-right:1px solid var(--brd);flex-shrink:0;display:flex;align-items:center}
   .sbh h3{display:none;margin:0}
   .nff{flex-direction:row;gap:4px;align-items:center}
   .nff input{width:110px;padding:5px 7px;font-size:.78rem}
   .nff button{width:28px;height:28px;font-size:.85rem}
-
-  .flist{
-    display:flex;flex-direction:row;flex-wrap:nowrap;
-    overflow-x:auto;overflow-y:hidden;
-    padding:6px 8px;gap:5px;
-    flex:1;
-    scrollbar-width:none;
-  }
+  .flist{display:flex;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding:6px 8px;gap:5px;flex:1;scrollbar-width:none}
   .flist::-webkit-scrollbar{display:none}
-
-  /* No mobile o f-group vira inline-flex horizontal */
   .f-group{display:contents}
-  .fi{
-    flex-shrink:0;
-    padding:5px 12px;
-    border-radius:20px;
-    border:1.5px solid var(--brd);
-    background:var(--surf);
-    gap:5px;
-    white-space:nowrap;
-  }
+  .fi{flex-shrink:0;padding:5px 12px;border-radius:20px;border:1.5px solid var(--brd);background:var(--surf);gap:5px;white-space:nowrap}
   .fi.active{border-color:var(--acc)}
   .fi .fcnt{display:none}
   .fi:hover .fdel{display:none}
-  /* Esconde subpastas inline no mobile */
   .sf-section{display:none}
-
-  /* Tira de subpastas mobile — abaixo do flist */
-  .sf-strip{
-    display:flex;
-    flex-direction:row;
-    flex-wrap:nowrap;
-    overflow-x:auto;
-    overflow-y:hidden;
-    padding:4px 8px 5px;
-    gap:5px;
-    border-top:1px solid var(--brd);
-    background:#f5f2ed;
-    scrollbar-width:none;
-    width:100%;
-    flex-shrink:0;
-  }
+  .sf-strip{display:flex;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding:4px 8px 5px;gap:5px;border-top:1px solid var(--brd);background:#f5f2ed;scrollbar-width:none;width:100%;flex-shrink:0}
   .sf-strip::-webkit-scrollbar{display:none}
-  .sf-chip{
-    flex-shrink:0;
-    padding:4px 10px;
-    border-radius:14px;
-    border:1.5px solid var(--brd);
-    background:var(--surf);
-    font-size:.75rem;
-    cursor:pointer;
-    white-space:nowrap;
-    color:var(--txt);
-  }
+  .sf-chip{flex-shrink:0;padding:4px 10px;border-radius:14px;border:1.5px solid var(--brd);background:var(--surf);font-size:.75rem;cursor:pointer;white-space:nowrap;color:var(--txt)}
   .sf-chip.active{border-color:var(--acc);background:var(--accl);color:var(--acc);font-weight:700}
-  .sf-chip:hover{background:#ede9e3}
-  .sf-mob-in{
-    flex-shrink:0;
-    width:115px;
-    padding:4px 8px;
-    border:1.5px dashed var(--brd);
-    border-radius:14px;
-    font-size:.74rem;
-    background:#fff;
-    color:var(--txt);
-    outline:none;
-  }
+  .sf-mob-in{flex-shrink:0;width:115px;padding:4px 8px;border:1.5px dashed var(--brd);border-radius:14px;font-size:.74rem;background:#fff;color:var(--txt);outline:none}
   .sf-mob-in:focus{border-color:var(--acc);border-style:solid}
-  .sf-mob-btn{
-    flex-shrink:0;
-    width:24px;height:24px;
-    background:var(--accl);
-    color:var(--acc);
-    border:1.5px solid #c8e6d4;
-    border-radius:50%;
-    cursor:pointer;
-    font-size:.85rem;
-    display:flex;align-items:center;justify-content:center;
-  }
+  .sf-mob-btn{flex-shrink:0;width:24px;height:24px;background:var(--accl);color:var(--acc);border:1.5px solid #c8e6d4;border-radius:50%;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center}
   .sf-mob-btn:hover{background:var(--acc);color:#fff}
-
   .npanel{flex:1;min-height:0}
   .nph{padding:10px 14px;flex-wrap:wrap;gap:7px}
   .nph h2{font-size:.88rem}
@@ -331,12 +281,13 @@ textarea.nta:focus{border-color:var(--acc)}
 </head>
 <body>
 
-<!-- Tela de carregamento -->
 <div id="loader">
   <div class="loader-logo">📒</div>
   <div class="loader-txt">Conectando...</div>
   <div class="spinner"></div>
 </div>
+
+<div id="toast" class="toast"></div>
 
 <div class="app">
   <div class="aph">
@@ -360,7 +311,7 @@ textarea.nta:focus{border-color:var(--acc)}
     <!-- NOTAS -->
     <div id="tab-notes" class="tp active">
       <div class="nl">
-        <div class="sidebar" id="sidebar-el">
+        <div class="sidebar">
           <div class="sbh">
             <h3>Pastas</h3>
             <div class="nff">
@@ -369,9 +320,7 @@ textarea.nta:focus{border-color:var(--acc)}
               <button onclick="createFolder()">＋</button>
             </div>
           </div>
-          <!-- lista de pastas (desktop: vertical; mobile: horizontal chips) -->
           <div class="flist" id="flist"></div>
-          <!-- tira de subpastas — só visível no mobile -->
           <div class="sf-strip" id="sf-strip"></div>
         </div>
         <div class="npanel">
@@ -399,7 +348,17 @@ textarea.nta:focus{border-color:var(--acc)}
             <label>Vencimento</label>
             <input type="date" id="act-due"/>
           </div>
-          <button class="btn bp" onclick="addAction()" style="align-self:flex-end">＋ Adicionar</button>
+          <div class="fg">
+            <label>Responsável</label>
+            <select id="act-contact">
+              <option value="">— Nenhum —</option>
+            </select>
+          </div>
+          <div class="atb-tools">
+            <button class="icon-btn" onclick="openContactsModal()" title="Gerenciar contatos">👥</button>
+            <button class="icon-btn" onclick="openEmailSettings()" title="Configurar email">⚙️</button>
+            <button class="btn bp" onclick="addAction()">＋ Adicionar</button>
+          </div>
         </div>
         <div class="sbar" id="sbar" style="display:none"></div>
         <div class="ascr">
@@ -414,12 +373,11 @@ textarea.nta:focus{border-color:var(--acc)}
   </div>
 </div>
 
-<!-- Modal renomear pasta / subpasta -->
+<!-- Modal renomear pasta/subpasta -->
 <div class="mov" id="ren-mov">
   <div class="modal">
     <h3 id="ren-title">✏️ Renomear pasta</h3>
-    <input type="text" id="ren-in" maxlength="40"
-      onkeydown="if(event.key==='Enter')doRename()"/>
+    <input type="text" id="ren-in" maxlength="40" onkeydown="if(event.key==='Enter')doRename()"/>
     <div class="mact">
       <button class="btn bo" onclick="closeRen()">Cancelar</button>
       <button class="btn bp" onclick="doRename()">Salvar</button>
@@ -427,26 +385,91 @@ textarea.nta:focus{border-color:var(--acc)}
   </div>
 </div>
 
+<!-- Modal contatos -->
+<div class="mov" id="contacts-mov">
+  <div class="modal wide">
+    <h3>👥 Contatos</h3>
+    <div class="c-list" id="c-list"></div>
+    <div style="border-top:1px solid var(--brd);padding-top:14px;margin-bottom:4px">
+      <div style="font-size:.74rem;font-weight:600;color:var(--mut);margin-bottom:8px">ADICIONAR CONTATO</div>
+      <div class="c-add-row">
+        <input type="text" id="c-name" placeholder="Nome" maxlength="40"
+          onkeydown="if(event.key==='Enter')document.getElementById('c-email').focus()"/>
+        <input type="email" id="c-email" placeholder="email@exemplo.com"
+          onkeydown="if(event.key==='Enter')createContact()"/>
+        <button class="btn bp bsm" onclick="createContact()">＋</button>
+      </div>
+    </div>
+    <div class="mact" style="margin-top:12px">
+      <button class="btn bo" onclick="closeContactsModal()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal configurações de email (Google Apps Script) -->
+<div class="mov" id="email-settings-mov">
+  <div class="modal wide">
+    <h3>⚙️ Configurar Envio de Emails</h3>
+    <div class="modal-note">
+      Usa o <strong>Google Apps Script</strong> com seu email corporativo — sem OAuth externo, 100% gratuito.<br><br>
+      <strong>Configure em 3 passos:</strong><br>
+      1. Acesse <a href="https://script.google.com" target="_blank">script.google.com</a> com seu email do Meli<br>
+      2. Clique em <strong>Novo projeto</strong> → apague o código e cole o script fornecido abaixo<br>
+      3. Clique em <strong>Implantar → Nova implantação</strong> → Tipo: <em>App da Web</em> → Executar como: <em>Eu</em> → Quem tem acesso: <em>Qualquer pessoa</em> → Copie a URL gerada<br><br>
+      <strong>Script a colar no Apps Script:</strong>
+    </div>
+    <textarea id="as-code-preview" rows="6" readonly
+      style="font-size:.72rem;font-family:monospace;background:#f8f8f8;border:1.5px solid var(--brd);border-radius:7px;padding:10px;width:100%;resize:none;margin-bottom:10px"
+      onclick="this.select()">function doPost(e){try{var d=JSON.parse(e.postData.contents);GmailApp.sendEmail(d.to,d.subject,'',{htmlBody:d.html,name:'Meu Caderno'});return ContentService.createTextOutput(JSON.stringify({status:'ok'})).setMimeType(ContentService.MimeType.JSON);}catch(err){return ContentService.createTextOutput(JSON.stringify({status:'error',message:err.toString()})).setMimeType(ContentService.MimeType.JSON);}}</textarea>
+    <button class="btn bo bsm" style="margin-bottom:12px" onclick="copyAppsScript()">📋 Copiar script</button>
+    <label style="font-size:.74rem;font-weight:600;color:var(--mut)">URL DA IMPLANTAÇÃO (cole aqui após implantar)</label>
+    <input type="text" id="es-url" placeholder="https://script.google.com/macros/s/…/exec"/>
+    <div class="mact">
+      <button class="btn bo" onclick="closeEmailSettings()">Cancelar</button>
+      <button class="btn bp" onclick="saveEmailSettings()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal resposta via link (aberto via ?token=) -->
+<div class="mov" id="respond-mov">
+  <div class="modal wide">
+    <h3>✅ Responder Ação</h3>
+    <div class="resp-card" id="resp-card"></div>
+    <label style="font-size:.74rem;font-weight:600;color:var(--mut)">SEU COMENTÁRIO (o que foi feito)</label>
+    <textarea id="resp-comment" placeholder="Descreva o que foi executado…" style="margin-top:6px"></textarea>
+    <div class="mact">
+      <button class="btn bo" onclick="submitComment()">💬 Só comentar</button>
+      <button class="btn bp" onclick="submitDone()">✅ Marcar como Concluída</button>
+    </div>
+  </div>
+</div>
+
 <script>
-/* ── STATE ── */
+/* ════════════════════════════════
+   STATE
+════════════════════════════════ */
 let folders     = [];
 let actionsData = [];
+let contacts    = [];
 let activeFId   = null;
-let activeSFId  = null;   // id da subpasta ativa (null = nível de pasta)
-let expandedFIds = {};    // quais pastas estão com subpastas abertas
+let activeSFId  = null;
+let expandedFIds = {};
 let colState    = {};
 let renFId      = null;
-let renSFId     = null;   // se preenchido, estamos renomeando subpasta
+let renSFId     = null;
 let editAId     = null;
 let _writing    = false;
 let saveTimer   = null;
+let _respondToken = null;  // token da URL se estiver em modo resposta
 
-let nxtF = 1, nxtA = 1, nxtN = 1, nxtSF = 1;
+let nxtF=1, nxtA=1, nxtN=1, nxtSF=1, nxtC=1;
 
 function recomputeCounters(){
-  nxtF  = folders.length ? Math.max(...folders.map(f=>f.id))+1 : 1;
-  nxtA  = actionsData.length ? Math.max(...actionsData.map(a=>a.id))+1 : 1;
-  nxtN  = 1; nxtSF = 1;
+  nxtF = folders.length ? Math.max(...folders.map(f=>f.id))+1 : 1;
+  nxtA = actionsData.length ? Math.max(...actionsData.map(a=>a.id))+1 : 1;
+  nxtC = contacts.length ? Math.max(...contacts.map(c=>c.id))+1 : 1;
+  nxtN=1; nxtSF=1;
   folders.forEach(f=>{
     (f.notes||[]).forEach(n=>{ if(n.id>=nxtN) nxtN=n.id+1; });
     (f.subfolders||[]).forEach(sf=>{
@@ -456,546 +479,532 @@ function recomputeCounters(){
   });
 }
 
-/* ── UTILS ── */
+/* ════════════════════════════════
+   UTILS
+════════════════════════════════ */
 function today(){ return new Date().toISOString().slice(0,10); }
+function nowISO(){ return new Date().toISOString(); }
 function fmtD(iso){ if(!iso)return''; const[y,m,d]=iso.split('-'); return`${d}/${m}/${y}`; }
+function fmtDT(iso){ if(!iso)return''; const d=new Date(iso); return d.toLocaleString('pt-BR'); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;'); }
+function genToken(){ return Date.now().toString(36)+'-'+Math.random().toString(36).substr(2,9); }
 
-/* Retorna o target (pasta ou subpasta) e as notas da seleção atual */
-function getActiveTarget(){
-  const folder = folders.find(f=>f.id===activeFId);
-  if(!folder) return null;
-  if(activeSFId){
-    const sf = (folder.subfolders||[]).find(sf=>sf.id===activeSFId);
-    return sf ? {folder, sf, notes:sf.notes||(sf.notes=[])} : null;
-  }
-  return {folder, sf:null, notes:folder.notes||(folder.notes=[])};
+function showToast(msg, dur=3000){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), dur);
 }
 
-/* ── SYNC STATUS ── */
-function setSS(type, label){
-  const b=document.getElementById('sync-badge'), l=document.getElementById('sync-label');
+function getActiveTarget(){
+  const folder=folders.find(f=>f.id===activeFId); if(!folder)return null;
+  if(activeSFId){
+    const sf=(folder.subfolders||[]).find(sf=>sf.id===activeSFId);
+    return sf ? {folder,sf,notes:sf.notes||(sf.notes=[])} : null;
+  }
+  return {folder,sf:null,notes:folder.notes||(folder.notes=[])};
+}
+
+/* ════════════════════════════════
+   SYNC STATUS
+════════════════════════════════ */
+function setSS(type,label){
+  const b=document.getElementById('sync-badge'),l=document.getElementById('sync-label');
   b.className='sync-badge '+type; l.textContent=label;
 }
 
-/* ── FIREBASE: escrever ── */
+/* ════════════════════════════════
+   FIREBASE
+════════════════════════════════ */
 function fbSave(){
-  if(!window._caderno_set) return;
+  if(!window._caderno_set)return;
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(()=>{
-    _writing = true;
-    setSS('wait','Salvando…');
-    const dbRef = window._caderno_ref(window._caderno_db, 'meuCaderno');
-    window._caderno_set(dbRef, { folders, actions: actionsData })
-      .then(()=>{ setSS('ok','Sincronizado'); setTimeout(()=>{ _writing=false; }, 300); })
+  saveTimer=setTimeout(()=>{
+    _writing=true; setSS('wait','Salvando…');
+    const dbRef=window._caderno_ref(window._caderno_db,'meuCaderno');
+    window._caderno_set(dbRef,{folders,actions:actionsData,contacts})
+      .then(()=>{ setSS('ok','Sincronizado'); setTimeout(()=>{_writing=false;},300); })
       .catch(()=>{ setSS('err','Erro ao salvar'); _writing=false; });
-  }, 600);
+  },600);
 }
 
-/* ── FIREBASE: ouvir ── */
 function fbListen(){
-  const dbRef = window._caderno_ref(window._caderno_db, 'meuCaderno');
-  window._caderno_on(dbRef, snap => {
-    if(_writing) return;
-    const data = snap.val();
+  const dbRef=window._caderno_ref(window._caderno_db,'meuCaderno');
+  window._caderno_on(dbRef, snap=>{
+    if(_writing)return;
+    const data=snap.val();
     if(data){
       folders     = data.folders     || [];
       actionsData = data.actions     || [];
+      contacts    = data.contacts    || [];
     } else { fbSave(); return; }
     recomputeCounters();
-    // Valida pasta ativa
-    if(activeFId && !folders.find(f=>f.id===activeFId)){
-      activeFId = folders.length ? folders[0].id : null;
-      activeSFId = null;
-    }
-    if(!activeFId && folders.length) activeFId = folders[0].id;
-    // Valida subpasta ativa
+    if(activeFId && !folders.find(f=>f.id===activeFId)){ activeFId=folders.length?folders[0].id:null; activeSFId=null; }
+    if(!activeFId && folders.length) activeFId=folders[0].id;
     if(activeSFId && activeFId){
-      const f = folders.find(f=>f.id===activeFId);
-      if(!f || !(f.subfolders||[]).find(sf=>sf.id===activeSFId)) activeSFId=null;
+      const f=folders.find(f=>f.id===activeFId);
+      if(!f||!(f.subfolders||[]).find(sf=>sf.id===activeSFId)) activeSFId=null;
     }
-    renderFolders(); renderNotes(); renderActions();
+    renderFolders(); renderNotes(); renderActions(); populateContactSelect();
     setSS('ok','Sincronizado');
+    // Modo resposta via URL token
+    if(_respondToken){ checkRespondToken(_respondToken); _respondToken=null; }
   }, ()=>{ setSS('err','Sem conexão'); });
 }
 
-/* ── INICIALIZAR FIREBASE ── */
-window.addEventListener('caderno_fb_ready', ()=>{
-  document.getElementById('loader').style.display = 'none';
+window.addEventListener('caderno_fb_ready',()=>{
+  document.getElementById('loader').style.display='none';
+  // Detecta token na URL antes de iniciar
+  const params=new URLSearchParams(window.location.search);
+  const tok=params.get('token');
+  if(tok) _respondToken=tok;
   fbListen();
 });
 setTimeout(()=>{
-  const l = document.getElementById('loader');
-  if(l.style.display !== 'none'){
-    l.innerHTML = '<div style="text-align:center;padding:24px;color:#555">Erro ao conectar.<br>Verifique sua internet.</div>';
-  }
-}, 7000);
+  const l=document.getElementById('loader');
+  if(l.style.display!=='none') l.innerHTML='<div style="text-align:center;padding:24px;color:#555">Erro ao conectar.<br>Verifique sua internet.</div>';
+},8000);
 
-/* ── TABS ── */
+/* ════════════════════════════════
+   TABS
+════════════════════════════════ */
 function switchTab(t){
   document.querySelectorAll('.tbtn').forEach((b,i)=>b.classList.toggle('active',i===(t==='notes'?0:1)));
   document.getElementById('tab-notes').classList.toggle('active',t==='notes');
   document.getElementById('tab-actions').classList.toggle('active',t==='actions');
 }
 
-/* ── DRAG & DROP STATE ── */
-let _dndSrc  = null;
-let _touchDnd = null;
-let _touchTimer = null;
+/* ════════════════════════════════
+   DRAG & DROP
+════════════════════════════════ */
+let _dndSrc=null, _touchDnd=null, _touchTimer=null;
 
-function _dndReorder(srcIdx, tgtIdx){
-  if(srcIdx === tgtIdx) return;
-  const item = folders.splice(srcIdx, 1)[0];
-  const newIdx = srcIdx < tgtIdx ? tgtIdx - 1 : tgtIdx;
-  folders.splice(newIdx, 0, item);
+function _dndReorder(srcIdx,tgtIdx){
+  if(srcIdx===tgtIdx)return;
+  const item=folders.splice(srcIdx,1)[0];
+  const newIdx=srcIdx<tgtIdx?tgtIdx-1:tgtIdx;
+  folders.splice(newIdx,0,item);
   renderFolders(); fbSave();
 }
+function dndStart(e,idx){ _dndSrc=idx; e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',idx); setTimeout(()=>{const el=document.querySelectorAll('#flist .f-group')[idx];if(el)el.classList.add('dnd-src');},0); }
+function dndEnter(e,idx){ e.preventDefault(); document.querySelectorAll('#flist .f-group').forEach(el=>el.classList.remove('dnd-above','dnd-below')); if(_dndSrc===null||_dndSrc===idx)return; const el=document.querySelectorAll('#flist .f-group')[idx]; if(!el)return; const mid=el.getBoundingClientRect().top+el.getBoundingClientRect().height/2; el.classList.add(e.clientY<mid?'dnd-above':'dnd-below'); }
+function dndDrop(e,idx){ e.preventDefault(); document.querySelectorAll('#flist .f-group').forEach(el=>el.classList.remove('dnd-src','dnd-above','dnd-below')); if(_dndSrc===null)return; const src=_dndSrc;_dndSrc=null; _dndReorder(src,idx); }
+function dndEnd(){ _dndSrc=null; document.querySelectorAll('#flist .f-group').forEach(el=>el.classList.remove('dnd-src','dnd-above','dnd-below')); }
 
-/* ── Desktop HTML5 DnD ── */
-function dndStart(e, idx){
-  _dndSrc = idx;
-  e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/plain', idx);
-  setTimeout(()=>{ const el=document.querySelectorAll('#flist .f-group')[idx]; if(el)el.classList.add('dnd-src'); }, 0);
-}
-function dndEnter(e, idx){
-  e.preventDefault();
-  document.querySelectorAll('#flist .f-group').forEach(el=>{ el.classList.remove('dnd-above','dnd-below'); });
-  if(_dndSrc===null||_dndSrc===idx) return;
-  const el=document.querySelectorAll('#flist .f-group')[idx];
-  if(!el) return;
-  const mid = el.getBoundingClientRect().top + el.getBoundingClientRect().height/2;
-  el.classList.add(e.clientY < mid ? 'dnd-above' : 'dnd-below');
-}
-function dndDrop(e, idx){
-  e.preventDefault();
-  document.querySelectorAll('#flist .f-group').forEach(el=>el.classList.remove('dnd-src','dnd-above','dnd-below'));
-  if(_dndSrc===null) return;
-  const src=_dndSrc; _dndSrc=null;
-  _dndReorder(src, idx);
-}
-function dndEnd(){
-  _dndSrc=null;
-  document.querySelectorAll('#flist .f-group').forEach(el=>el.classList.remove('dnd-src','dnd-above','dnd-below'));
-}
-
-/* ── Mobile Touch DnD ── */
-function _touchStart(e, idx){
-  if(e.touches.length>1) return;
-  _touchTimer = setTimeout(()=>{
-    _touchTimer=null;
-    const t=e.touches[0];
-    const ghost=document.createElement('div');
-    ghost.className='dnd-ghost-el';
+function _touchStart(e,idx){
+  if(e.touches.length>1)return;
+  _touchTimer=setTimeout(()=>{
+    _touchTimer=null; const t=e.touches[0];
+    const ghost=document.createElement('div'); ghost.className='dnd-ghost-el';
     ghost.innerHTML='⠿ '+esc(folders[idx].name);
-    ghost.style.left=(t.clientX+12)+'px';
-    ghost.style.top=(t.clientY-18)+'px';
+    ghost.style.left=(t.clientX+12)+'px'; ghost.style.top=(t.clientY-18)+'px';
     document.body.appendChild(ghost);
-    const grp=document.querySelectorAll('#flist .f-group')[idx];
-    if(grp) grp.classList.add('dnd-src');
-    _touchDnd={srcIdx:idx, ghostEl:ghost};
-    navigator.vibrate&&navigator.vibrate(40);
-  }, 450);
+    const grp=document.querySelectorAll('#flist .f-group')[idx]; if(grp)grp.classList.add('dnd-src');
+    _touchDnd={srcIdx:idx,ghostEl:ghost}; navigator.vibrate&&navigator.vibrate(40);
+  },450);
 }
 function _touchMove(e){
-  clearTimeout(_touchTimer); _touchTimer=null;
-  if(!_touchDnd) return;
-  e.preventDefault();
-  const t=e.touches[0];
-  _touchDnd.ghostEl.style.left=(t.clientX+12)+'px';
-  _touchDnd.ghostEl.style.top=(t.clientY-18)+'px';
-  _touchDnd.ghostEl.style.display='none';
-  const under=document.elementFromPoint(t.clientX, t.clientY);
-  _touchDnd.ghostEl.style.display='';
-  const tgtGrp=under?.closest('#flist .f-group');
-  document.querySelectorAll('#flist .f-group').forEach(el=>el.classList.remove('dnd-above','dnd-below'));
-  if(tgtGrp){
-    const items=[...document.querySelectorAll('#flist .f-group')];
-    const tgtIdx=items.indexOf(tgtGrp);
-    if(tgtIdx!==-1&&tgtIdx!==_touchDnd.srcIdx){
-      const mid=tgtGrp.getBoundingClientRect().top+tgtGrp.getBoundingClientRect().height/2;
-      tgtGrp.classList.add(t.clientY<mid?'dnd-above':'dnd-below');
-      _touchDnd.tgtIdx=tgtIdx;
-    }
-  }
+  clearTimeout(_touchTimer);_touchTimer=null; if(!_touchDnd)return; e.preventDefault();
+  const t=e.touches[0]; _touchDnd.ghostEl.style.left=(t.clientX+12)+'px'; _touchDnd.ghostEl.style.top=(t.clientY-18)+'px';
+  _touchDnd.ghostEl.style.display='none'; const under=document.elementFromPoint(t.clientX,t.clientY); _touchDnd.ghostEl.style.display='';
+  const tgtGrp=under?.closest('#flist .f-group'); document.querySelectorAll('#flist .f-group').forEach(el=>el.classList.remove('dnd-above','dnd-below'));
+  if(tgtGrp){ const items=[...document.querySelectorAll('#flist .f-group')]; const tgtIdx=items.indexOf(tgtGrp); if(tgtIdx!==-1&&tgtIdx!==_touchDnd.srcIdx){ const mid=tgtGrp.getBoundingClientRect().top+tgtGrp.getBoundingClientRect().height/2; tgtGrp.classList.add(t.clientY<mid?'dnd-above':'dnd-below'); _touchDnd.tgtIdx=tgtIdx; } }
 }
 function _touchEnd(e){
-  clearTimeout(_touchTimer); _touchTimer=null;
-  if(!_touchDnd) return;
-  const {srcIdx, ghostEl, tgtIdx}=_touchDnd;
-  ghostEl.remove();
+  clearTimeout(_touchTimer);_touchTimer=null; if(!_touchDnd)return;
+  const{srcIdx,ghostEl,tgtIdx}=_touchDnd; ghostEl.remove();
   document.querySelectorAll('#flist .f-group').forEach(el=>el.classList.remove('dnd-src','dnd-above','dnd-below'));
-  _touchDnd=null;
-  if(tgtIdx!==undefined&&tgtIdx!==srcIdx) _dndReorder(srcIdx, tgtIdx);
+  _touchDnd=null; if(tgtIdx!==undefined&&tgtIdx!==srcIdx)_dndReorder(srcIdx,tgtIdx);
 }
 
-/* ── PASTAS ── */
+/* ════════════════════════════════
+   PASTAS + SUBPASTAS
+════════════════════════════════ */
 function renderFolders(){
   const el=document.getElementById('flist');
-  if(!folders.length){
-    el.innerHTML=`<div style="padding:18px 10px;text-align:center;color:var(--mut);font-size:.8rem;line-height:1.7">Crie uma pasta.<br>Ex: nome de um<br>colega ou assunto.</div>`;
-    renderSFStrip(); return;
-  }
+  if(!folders.length){ el.innerHTML=`<div style="padding:18px 10px;text-align:center;color:var(--mut);font-size:.8rem;line-height:1.7">Crie uma pasta.<br>Ex: nome de um<br>colega ou assunto.</div>`; renderSFStrip(); return; }
 
-  el.innerHTML = folders.map((f,i)=>{
-    const isActive   = f.id===activeFId;
-    const isExpanded = !!expandedFIds[f.id];
-    const sfs        = f.subfolders||[];
-    const hasSF      = sfs.length > 0;
-    const totalNotes = (f.notes||[]).length + sfs.reduce((s,sf)=>s+(sf.notes||[]).length,0);
-
-    // Botão +/− (estilo Excel) — aparece quando pasta está ativa ou já tem subpastas
-    const toggleBtn = (isActive||hasSF) ? `
-      <button class="f-toggle" title="${isExpanded?'Fechar subpastas':'Abrir subpastas'}"
-        onclick="event.stopPropagation();toggleExpand(${f.id})">${isExpanded?'−':'+'}</button>` : '';
-
-    // Subpastas inline — só no desktop, só quando expandido
-    const sfHtml = isExpanded ? `
-      <div class="sf-section">
-        ${sfs.map(sf=>`
-          <div class="fi sf-fi ${activeSFId===sf.id?'active':''}"
-            onclick="selSF(${f.id},${sf.id})">
-            <span class="sf-arrow">↳</span>
-            <span class="fname">${esc(sf.name)}</span>
-            <span class="fcnt">${(sf.notes||[]).length}</span>
-            <button class="fdel" onclick="event.stopPropagation();openRenSF(${f.id},${sf.id})" title="Renomear">✏️</button>
-            <button class="fdel" onclick="event.stopPropagation();delSF(${f.id},${sf.id})" title="Excluir">✕</button>
-          </div>`).join('')}
-        <div class="sf-add-row">
-          <input id="sfi-${f.id}" type="text" placeholder="Nova subpasta…" maxlength="40"
-            onclick="event.stopPropagation()"
-            onkeydown="if(event.key==='Enter')createSubfolder(${f.id})"/>
-          <button onclick="createSubfolder(${f.id})">＋</button>
-        </div>
-      </div>` : '';
-
-    return `<div class="f-group"
-      ondragenter="dndEnter(event,${i})"
-      ondragover="event.preventDefault()"
-      ondrop="dndDrop(event,${i})"
-      ondragend="dndEnd()">
-      <div class="fi ${isActive&&!activeSFId?'active':''}"
-        draggable="true"
-        ondragstart="dndStart(event,${i})"
-        onclick="selF(${f.id})">
+  el.innerHTML=folders.map((f,i)=>{
+    const isActive=f.id===activeFId, isExpanded=!!expandedFIds[f.id];
+    const sfs=f.subfolders||[], hasSF=sfs.length>0;
+    const totalNotes=(f.notes||[]).length+sfs.reduce((s,sf)=>s+(sf.notes||[]).length,0);
+    const toggleBtn=(isActive||hasSF)?`<button class="f-toggle" title="${isExpanded?'Fechar':'Abrir'} subpastas" onclick="event.stopPropagation();toggleExpand(${f.id})">${isExpanded?'−':'+'}</button>`:'';
+    const sfHtml=isExpanded?`<div class="sf-section">${sfs.map(sf=>`<div class="fi sf-fi ${activeSFId===sf.id?'active':''}" onclick="selSF(${f.id},${sf.id})"><span class="sf-arrow">↳</span><span class="fname">${esc(sf.name)}</span><span class="fcnt">${(sf.notes||[]).length}</span><button class="fdel" onclick="event.stopPropagation();openRenSF(${f.id},${sf.id})" title="Renomear">✏️</button><button class="fdel" onclick="event.stopPropagation();delSF(${f.id},${sf.id})" title="Excluir">✕</button></div>`).join('')}<div class="sf-add-row"><input id="sfi-${f.id}" type="text" placeholder="Nova subpasta…" maxlength="40" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter')createSubfolder(${f.id})"/><button onclick="createSubfolder(${f.id})">＋</button></div></div>`:'';
+    return `<div class="f-group" ondragenter="dndEnter(event,${i})" ondragover="event.preventDefault()" ondrop="dndDrop(event,${i})" ondragend="dndEnd()">
+      <div class="fi ${isActive&&!activeSFId?'active':''}" draggable="true" ondragstart="dndStart(event,${i})" onclick="selF(${f.id})">
         <span class="drag-handle" onclick="event.stopPropagation()">⠿</span>
         ${toggleBtn}
         <span class="fname">${esc(f.name)}</span>
         <span class="fcnt">${totalNotes}</span>
         <button class="fdel" onclick="event.stopPropagation();openRen(${f.id})" title="Renomear">✏️</button>
         <button class="fdel" onclick="event.stopPropagation();delF(${f.id})" title="Excluir">✕</button>
-      </div>
-      ${sfHtml}
-    </div>`;
+      </div>${sfHtml}</div>`;
   }).join('');
 
-  // Touch DnD — listener no .fi principal de cada grupo
   document.querySelectorAll('#flist .f-group').forEach((grp,i)=>{
-    const mainFi = grp.querySelector('.fi:not(.sf-fi)');
-    if(!mainFi) return;
-    mainFi.addEventListener('touchstart', e=>_touchStart(e,i), {passive:true});
-    mainFi.addEventListener('touchmove',  e=>_touchMove(e),   {passive:false});
-    mainFi.addEventListener('touchend',   e=>_touchEnd(e),    {passive:true});
-    mainFi.addEventListener('touchcancel',()=>{
-      clearTimeout(_touchTimer);
-      if(_touchDnd){_touchDnd.ghostEl.remove();_touchDnd=null;}
-      document.querySelectorAll('#flist .f-group').forEach(x=>x.classList.remove('dnd-src','dnd-above','dnd-below'));
-    },{passive:true});
+    const mainFi=grp.querySelector('.fi:not(.sf-fi)'); if(!mainFi)return;
+    mainFi.addEventListener('touchstart',e=>_touchStart(e,i),{passive:true});
+    mainFi.addEventListener('touchmove', e=>_touchMove(e),  {passive:false});
+    mainFi.addEventListener('touchend',  e=>_touchEnd(e),   {passive:true});
+    mainFi.addEventListener('touchcancel',()=>{ clearTimeout(_touchTimer); if(_touchDnd){_touchDnd.ghostEl.remove();_touchDnd=null;} document.querySelectorAll('#flist .f-group').forEach(x=>x.classList.remove('dnd-src','dnd-above','dnd-below')); },{passive:true});
   });
-
   renderSFStrip();
 }
 
-/* ── TIRA DE SUBPASTAS (mobile) ── */
 function renderSFStrip(){
-  const strip = document.getElementById('sf-strip');
-  if(!activeFId || !expandedFIds[activeFId]){ strip.innerHTML=''; return; }
-  const folder = folders.find(f=>f.id===activeFId);
-  if(!folder){ strip.innerHTML=''; return; }
-  const sfs = folder.subfolders||[];
-  const chips = sfs.map(sf=>
-    `<span class="sf-chip ${activeSFId===sf.id?'active':''}" onclick="selSF(${folder.id},${sf.id})">↳ ${esc(sf.name)}</span>`
-  ).join('');
-  strip.innerHTML = chips +
-    `<input id="sfi-mob-${folder.id}" class="sf-mob-in" type="text" placeholder="+ subpasta…" maxlength="40"
-       onkeydown="if(event.key==='Enter')createSubfolderMob(${folder.id})"/>` +
+  const strip=document.getElementById('sf-strip');
+  if(!activeFId||!expandedFIds[activeFId]){strip.innerHTML='';return;}
+  const folder=folders.find(f=>f.id===activeFId); if(!folder){strip.innerHTML='';return;}
+  const sfs=folder.subfolders||[];
+  strip.innerHTML=sfs.map(sf=>`<span class="sf-chip ${activeSFId===sf.id?'active':''}" onclick="selSF(${folder.id},${sf.id})">↳ ${esc(sf.name)}</span>`).join('')+
+    `<input id="sfi-mob-${folder.id}" class="sf-mob-in" type="text" placeholder="+ subpasta…" maxlength="40" onkeydown="if(event.key==='Enter')createSubfolderMob(${folder.id})"/>` +
     `<button class="sf-mob-btn" onclick="createSubfolderMob(${folder.id})">＋</button>`;
 }
 
-/* ── SUBFOLDER CRUD ── */
-function selF(id){
-  if(activeFId===id){
-    // Clicou na pasta já ativa → alterna expansão
-    expandedFIds[id] = !expandedFIds[id];
-    if(!expandedFIds[id]) activeSFId=null;
-  } else {
-    activeFId=id; activeSFId=null;
-    expandedFIds[id]=true;   // abre automaticamente ao selecionar
-  }
-  renderFolders(); renderNotes();
-}
-function toggleExpand(id){
-  expandedFIds[id]=!expandedFIds[id];
-  if(!expandedFIds[id] && activeFId===id) activeSFId=null;
-  renderFolders(); renderNotes();
-}
-function selSF(fId, sfId){
-  activeFId=fId; activeSFId=sfId; expandedFIds[fId]=true;
-  renderFolders(); renderNotes();
-}
-
-function _doCreateSubfolder(parentFId, name){
-  const folder=folders.find(f=>f.id===parentFId); if(!folder)return;
-  if(!folder.subfolders) folder.subfolders=[];
-  const sf={id:nxtSF++, name, notes:[]};
-  folder.subfolders.push(sf);
-  activeFId=parentFId; activeSFId=sf.id;
-  renderFolders(); renderNotes(); fbSave();
-}
-function createSubfolder(parentFId){
-  const inp=document.getElementById('sfi-'+parentFId); if(!inp)return;
-  const name=inp.value.trim(); if(!name){inp.focus();return;}
-  inp.value=''; _doCreateSubfolder(parentFId, name);
-}
-function createSubfolderMob(parentFId){
-  const inp=document.getElementById('sfi-mob-'+parentFId); if(!inp)return;
-  const name=inp.value.trim(); if(!name){inp.focus();return;}
-  inp.value=''; _doCreateSubfolder(parentFId, name);
-}
-
-function delSF(parentFId, sfId){
-  const folder=folders.find(f=>f.id===parentFId); if(!folder)return;
-  const sf=(folder.subfolders||[]).find(sf=>sf.id===sfId); if(!sf)return;
-  if(!confirm(`Excluir a subpasta "${sf.name}" e todas as anotações?`))return;
-  folder.subfolders=folder.subfolders.filter(sf=>sf.id!==sfId);
-  if(activeSFId===sfId){ activeSFId=null; }
-  renderFolders(); renderNotes(); fbSave();
-}
-
-function openRenSF(parentFId, sfId){
-  renFId=parentFId; renSFId=sfId;
-  const folder=folders.find(f=>f.id===parentFId);
-  const sf=folder&&(folder.subfolders||[]).find(sf=>sf.id===sfId);
-  document.getElementById('ren-title').textContent='✏️ Renomear subpasta';
-  document.getElementById('ren-in').value=sf?sf.name:'';
-  document.getElementById('ren-mov').classList.add('open');
-  setTimeout(()=>document.getElementById('ren-in').focus(),50);
-}
-
-/* ── PASTAS CRUD ── */
-function createFolder(){
-  const inp=document.getElementById('nfi'), name=inp.value.trim();
-  if(!name){ inp.focus(); return; }
-  const f={id:nxtF++, name, notes:[], subfolders:[]};
-  folders.push(f); inp.value='';
-  activeFId=f.id; activeSFId=null;
-  renderFolders(); renderNotes(); fbSave();
-}
-
-function delF(id){
-  const f=folders.find(f=>f.id===id); if(!f)return;
-  if(!confirm(`Excluir a pasta "${f.name}" e todas as anotações?`))return;
-  folders=folders.filter(f=>f.id!==id);
-  if(activeFId===id){ activeFId=folders.length?folders[0].id:null; activeSFId=null; }
-  renderFolders(); renderNotes(); fbSave();
-}
-
-function openRen(id){
-  renFId=id; renSFId=null;
-  const f=folders.find(f=>f.id===id);
-  document.getElementById('ren-title').textContent='✏️ Renomear pasta';
-  document.getElementById('ren-in').value=f?f.name:'';
-  document.getElementById('ren-mov').classList.add('open');
-  setTimeout(()=>document.getElementById('ren-in').focus(),50);
-}
-function closeRen(){ renFId=null; renSFId=null; document.getElementById('ren-mov').classList.remove('open'); }
-function doRename(){
-  const name=document.getElementById('ren-in').value.trim(); if(!name)return;
-  if(renSFId!==null){
-    // subpasta
-    const folder=folders.find(f=>f.id===renFId);
-    const sf=folder&&(folder.subfolders||[]).find(sf=>sf.id===renSFId);
-    if(sf) sf.name=name;
-  } else {
-    // pasta
-    const f=folders.find(f=>f.id===renFId); if(f) f.name=name;
-  }
-  closeRen(); renderFolders(); renderNotes(); fbSave();
-}
+function selF(id){ if(activeFId===id){expandedFIds[id]=!expandedFIds[id];if(!expandedFIds[id])activeSFId=null;}else{activeFId=id;activeSFId=null;expandedFIds[id]=true;} renderFolders();renderNotes(); }
+function toggleExpand(id){ expandedFIds[id]=!expandedFIds[id]; if(!expandedFIds[id]&&activeFId===id)activeSFId=null; renderFolders();renderNotes(); }
+function selSF(fId,sfId){ activeFId=fId;activeSFId=sfId;expandedFIds[fId]=true; renderFolders();renderNotes(); }
+function _doCreateSubfolder(parentFId,name){ const folder=folders.find(f=>f.id===parentFId);if(!folder)return;if(!folder.subfolders)folder.subfolders=[];const sf={id:nxtSF++,name,notes:[]};folder.subfolders.push(sf);activeFId=parentFId;activeSFId=sf.id;renderFolders();renderNotes();fbSave(); }
+function createSubfolder(pFId){ const inp=document.getElementById('sfi-'+pFId);if(!inp)return;const n=inp.value.trim();if(!n){inp.focus();return;}inp.value='';_doCreateSubfolder(pFId,n); }
+function createSubfolderMob(pFId){ const inp=document.getElementById('sfi-mob-'+pFId);if(!inp)return;const n=inp.value.trim();if(!n){inp.focus();return;}inp.value='';_doCreateSubfolder(pFId,n); }
+function delSF(pFId,sfId){ const f=folders.find(f=>f.id===pFId);if(!f)return;const sf=(f.subfolders||[]).find(sf=>sf.id===sfId);if(!sf)return;if(!confirm(`Excluir "${sf.name}"?`))return;f.subfolders=f.subfolders.filter(sf=>sf.id!==sfId);if(activeSFId===sfId)activeSFId=null;renderFolders();renderNotes();fbSave(); }
+function openRenSF(pFId,sfId){ renFId=pFId;renSFId=sfId;const f=folders.find(f=>f.id===pFId);const sf=f&&(f.subfolders||[]).find(sf=>sf.id===sfId);document.getElementById('ren-title').textContent='✏️ Renomear subpasta';document.getElementById('ren-in').value=sf?sf.name:'';document.getElementById('ren-mov').classList.add('open');setTimeout(()=>document.getElementById('ren-in').focus(),50); }
+function createFolder(){ const inp=document.getElementById('nfi'),name=inp.value.trim();if(!name){inp.focus();return;}const f={id:nxtF++,name,notes:[],subfolders:[]};folders.push(f);inp.value='';activeFId=f.id;activeSFId=null;renderFolders();renderNotes();fbSave(); }
+function delF(id){ const f=folders.find(f=>f.id===id);if(!f)return;if(!confirm(`Excluir "${f.name}" e todas as anotações?`))return;folders=folders.filter(f=>f.id!==id);if(activeFId===id){activeFId=folders.length?folders[0].id:null;activeSFId=null;}renderFolders();renderNotes();fbSave(); }
+function openRen(id){ renFId=id;renSFId=null;const f=folders.find(f=>f.id===id);document.getElementById('ren-title').textContent='✏️ Renomear pasta';document.getElementById('ren-in').value=f?f.name:'';document.getElementById('ren-mov').classList.add('open');setTimeout(()=>document.getElementById('ren-in').focus(),50); }
+function closeRen(){ renFId=null;renSFId=null;document.getElementById('ren-mov').classList.remove('open'); }
+function doRename(){ const name=document.getElementById('ren-in').value.trim();if(!name)return;if(renSFId!==null){const f=folders.find(f=>f.id===renFId);const sf=f&&(f.subfolders||[]).find(sf=>sf.id===renSFId);if(sf)sf.name=name;}else{const f=folders.find(f=>f.id===renFId);if(f)f.name=name;}closeRen();renderFolders();renderNotes();fbSave(); }
 document.getElementById('ren-mov').addEventListener('click',e=>{if(e.target===e.currentTarget)closeRen();});
 
-/* ── PAINEL DE NOTAS ── */
+/* ════════════════════════════════
+   PAINEL DE NOTAS
+════════════════════════════════ */
 function renderNotes(){
-  const hdr=document.getElementById('nph'), body=document.getElementById('nbody');
-  if(!activeFId){
-    hdr.innerHTML=`<div style="display:flex;align-items:center;gap:10px;color:var(--mut)"><span style="font-size:1.3rem">👈</span><p style="font-size:.87rem">Selecione ou crie uma pasta</p></div>`;
-    body.innerHTML=''; return;
-  }
-  const folder=folders.find(f=>f.id===activeFId); if(!folder)return;
-  const target = getActiveTarget(); if(!target)return;
-  const {notes} = target;
-
-  // Cabeçalho com breadcrumb
-  let titleHtml = activeSFId
-    ? `${esc(folder.name)} <span style="color:var(--mut);font-weight:400;font-size:.85em">›</span> ${esc(target.sf.name)}`
-    : esc(folder.name);
-
-  const pfd=document.getElementById('nfd'); const fd=pfd?pfd.value:'';
-  hdr.innerHTML=`
-    <h2>${titleHtml}</h2>
-    <div class="ha">
-      <input type="date" id="nfd" class="fin bsm" value="${esc(fd)}" oninput="renderNotes()"/>
-      <button class="btn bo bsm" onclick="document.getElementById('nfd').value='';renderNotes()">Limpar</button>
-      <button class="btn bp bsm" onclick="addNote()">＋ Nova anotação</button>
-    </div>`;
-
+  const hdr=document.getElementById('nph'),body=document.getElementById('nbody');
+  if(!activeFId){hdr.innerHTML=`<div style="display:flex;align-items:center;gap:10px;color:var(--mut)"><span style="font-size:1.3rem">👈</span><p style="font-size:.87rem">Selecione ou crie uma pasta</p></div>`;body.innerHTML='';return;}
+  const folder=folders.find(f=>f.id===activeFId);if(!folder)return;
+  const target=getActiveTarget();if(!target)return;
+  const{notes}=target;
+  let titleHtml=activeSFId?`${esc(folder.name)} <span style="color:var(--mut);font-weight:400;font-size:.85em">›</span> ${esc(target.sf.name)}`:esc(folder.name);
+  const pfd=document.getElementById('nfd');const fd=pfd?pfd.value:'';
+  hdr.innerHTML=`<h2>${titleHtml}</h2><div class="ha"><input type="date" id="nfd" class="fin bsm" value="${esc(fd)}" oninput="renderNotes()"/><button class="btn bo bsm" onclick="document.getElementById('nfd').value='';renderNotes()">Limpar</button><button class="btn bp bsm" onclick="addNote()">＋ Nova anotação</button></div>`;
   const fd2=document.getElementById('nfd').value;
   let sorted=[...notes].sort((a,b)=>b.date.localeCompare(a.date));
-  if(fd2) sorted=sorted.filter(n=>n.date===fd2);
-  if(!sorted.length){
-    body.innerHTML=`<div class="empty"><div class="ei">📝</div><p>${fd2?'Nenhuma anotação nesta data.':'Esta pasta está vazia.<br>Clique em <strong>+ Nova anotação</strong>.'}</p></div>`;
-    return;
-  }
+  if(fd2)sorted=sorted.filter(n=>n.date===fd2);
+  if(!sorted.length){body.innerHTML=`<div class="empty"><div class="ei">📝</div><p>${fd2?'Nenhuma anotação nesta data.':'Esta pasta está vazia.<br>Clique em <strong>+ Nova anotação</strong>.'}</p></div>`;return;}
   body.innerHTML=sorted.map(n=>{
-    const c=!!colState[n.id];
-    const pv=c&&n.text?n.text.slice(0,70)+(n.text.length>70?'…':''):'';
-    return`<div class="ne ${c?'col':''}" id="ne-${n.id}">
-      <div class="neh" onclick="togNote(${n.id})">
-        <span class="dlbl">📅 ${fmtD(n.date)}</span>
-        ${c&&pv?`<span class="prev">${esc(pv)}</span>`:''}
-        <span class="chev">▼</span>
-        <button class="btn bd bsm" style="margin-left:5px"
-          onclick="event.stopPropagation();delNote(${n.id})">🗑</button>
-      </div>
-      <div class="nebody">
-        <textarea class="nta" placeholder="Escreva aqui…"
-          oninput="noteChg(${n.id},this.value)">${esc(n.text)}</textarea>
-        <div class="nef"><span class="asl">💾 Salvo automaticamente</span></div>
-      </div>
-    </div>`;
+    const c=!!colState[n.id];const pv=c&&n.text?n.text.slice(0,70)+(n.text.length>70?'…':''):'';
+    return`<div class="ne ${c?'col':''}" id="ne-${n.id}"><div class="neh" onclick="togNote(${n.id})"><span class="dlbl">📅 ${fmtD(n.date)}</span>${c&&pv?`<span class="prev">${esc(pv)}</span>`:''}<span class="chev">▼</span><button class="btn bd bsm" style="margin-left:5px" onclick="event.stopPropagation();delNote(${n.id})">🗑</button></div><div class="nebody"><textarea class="nta" placeholder="Escreva aqui…" oninput="noteChg(${n.id},this.value)">${esc(n.text)}</textarea><div class="nef"><span class="asl">💾 Salvo automaticamente</span></div></div></div>`;
   }).join('');
 }
-
-function addNote(){
-  const target=getActiveTarget(); if(!target)return;
-  const {notes}=target;
-  const d=today(), ex=notes.find(n=>n.date===d);
-  if(ex){ colState[ex.id]=false; renderNotes(); focusNote(ex.id); return; }
-  const n={id:nxtN++, date:d, text:''};
-  notes.unshift(n); colState[n.id]=false;
-  renderFolders(); renderNotes(); focusNote(n.id); fbSave();
-}
-function focusNote(id){
-  setTimeout(()=>{
-    const el=document.getElementById('ne-'+id);
-    if(el){ el.scrollIntoView({behavior:'smooth',block:'center'}); const ta=el.querySelector('textarea'); if(ta)ta.focus(); }
-  },80);
-}
-function delNote(id){
-  if(!confirm('Excluir esta anotação?'))return;
-  const target=getActiveTarget(); if(!target)return;
-  if(target.sf) target.sf.notes=target.sf.notes.filter(n=>n.id!==id);
-  else target.folder.notes=target.folder.notes.filter(n=>n.id!==id);
-  renderFolders(); renderNotes(); fbSave();
-}
-function noteChg(id,txt){
-  const target=getActiveTarget(); if(!target)return;
-  const n=(target.notes||[]).find(n=>n.id===id); if(n)n.text=txt;
-  fbSave();
-}
+function addNote(){ const target=getActiveTarget();if(!target)return;const{notes}=target;const d=today(),ex=notes.find(n=>n.date===d);if(ex){colState[ex.id]=false;renderNotes();focusNote(ex.id);return;}const n={id:nxtN++,date:d,text:''};notes.unshift(n);colState[n.id]=false;renderFolders();renderNotes();focusNote(n.id);fbSave(); }
+function focusNote(id){ setTimeout(()=>{const el=document.getElementById('ne-'+id);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});const ta=el.querySelector('textarea');if(ta)ta.focus();}},80); }
+function delNote(id){ if(!confirm('Excluir esta anotação?'))return;const target=getActiveTarget();if(!target)return;if(target.sf)target.sf.notes=target.sf.notes.filter(n=>n.id!==id);else target.folder.notes=target.folder.notes.filter(n=>n.id!==id);renderFolders();renderNotes();fbSave(); }
+function noteChg(id,txt){ const target=getActiveTarget();if(!target)return;const n=(target.notes||[]).find(n=>n.id===id);if(n)n.text=txt;fbSave(); }
 function togNote(id){
-  colState[id]=!colState[id];
-  const el=document.getElementById('ne-'+id); if(!el)return;
+  colState[id]=!colState[id];const el=document.getElementById('ne-'+id);if(!el)return;
   el.classList.toggle('col',colState[id]);
-  if(colState[id]){
-    const target=getActiveTarget();
-    const n=target&&(target.notes||[]).find(n=>n.id===id);
-    if(n&&n.text){
-      let p=el.querySelector('.prev');
-      if(!p){ p=document.createElement('span'); p.className='prev'; el.querySelector('.neh').insertBefore(p,el.querySelector('.chev')); }
-      p.textContent=n.text.slice(0,70)+(n.text.length>70?'…':'');
+  if(colState[id]){const target=getActiveTarget();const n=target&&(target.notes||[]).find(n=>n.id===id);if(n&&n.text){let p=el.querySelector('.prev');if(!p){p=document.createElement('span');p.className='prev';el.querySelector('.neh').insertBefore(p,el.querySelector('.chev'));}p.textContent=n.text.slice(0,70)+(n.text.length>70?'…':'');}}
+}
+
+/* ════════════════════════════════
+   CONTATOS
+════════════════════════════════ */
+function openContactsModal(){
+  renderContactsList();
+  document.getElementById('contacts-mov').classList.add('open');
+  setTimeout(()=>document.getElementById('c-name').focus(),80);
+}
+function closeContactsModal(){ document.getElementById('contacts-mov').classList.remove('open'); }
+document.getElementById('contacts-mov').addEventListener('click',e=>{if(e.target===e.currentTarget)closeContactsModal();});
+
+function renderContactsList(){
+  const el=document.getElementById('c-list');
+  if(!contacts.length){el.innerHTML=`<div style="text-align:center;padding:16px;color:var(--mut);font-size:.82rem">Nenhum contato cadastrado.</div>`;return;}
+  el.innerHTML=contacts.map(c=>`
+    <div class="c-item">
+      <div class="c-av">${esc(c.name.charAt(0).toUpperCase())}</div>
+      <div class="c-info">
+        <div class="c-name">${esc(c.name)}</div>
+        <div class="c-email">${esc(c.email)}</div>
+      </div>
+      <button class="c-del" onclick="delContact(${c.id})" title="Excluir">✕</button>
+    </div>`).join('');
+}
+
+function createContact(){
+  const nEl=document.getElementById('c-name'),eEl=document.getElementById('c-email');
+  const name=nEl.value.trim(), email=eEl.value.trim();
+  if(!name){nEl.focus();showToast('Digite o nome do contato.');return;}
+  if(!email||!email.includes('@')){eEl.focus();showToast('Digite um email válido.');return;}
+  contacts.push({id:nxtC++,name,email});
+  nEl.value='';eEl.value='';
+  renderContactsList(); populateContactSelect(); fbSave();
+  showToast(`✅ ${name} adicionado!`);
+}
+function delContact(id){
+  const c=contacts.find(c=>c.id===id);if(!c)return;
+  if(!confirm(`Remover "${c.name}" dos contatos?`))return;
+  contacts=contacts.filter(c=>c.id!==id);
+  renderContactsList(); populateContactSelect(); fbSave();
+}
+function populateContactSelect(){
+  const sel=document.getElementById('act-contact');
+  const prev=sel.value;
+  sel.innerHTML='<option value="">— Nenhum —</option>'+contacts.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  if(prev)sel.value=prev;
+}
+
+/* ════════════════════════════════
+   CONFIGURAÇÕES DE EMAIL (Google Apps Script)
+════════════════════════════════ */
+let emailCfg = {};
+function loadEmailCfg(){
+  try{ emailCfg=JSON.parse(localStorage.getItem('caderno_email_cfg')||'{}'); }catch(e){emailCfg={};}
+}
+function openEmailSettings(){
+  loadEmailCfg();
+  document.getElementById('es-url').value=emailCfg.appsScriptUrl||'';
+  document.getElementById('email-settings-mov').classList.add('open');
+}
+function closeEmailSettings(){ document.getElementById('email-settings-mov').classList.remove('open'); }
+function saveEmailSettings(){
+  const url=document.getElementById('es-url').value.trim();
+  if(!url||!url.startsWith('https://')){showToast('Cole a URL da implantação do Apps Script.');return;}
+  emailCfg={appsScriptUrl:url};
+  localStorage.setItem('caderno_email_cfg',JSON.stringify(emailCfg));
+  closeEmailSettings();
+  showToast('✅ Email configurado! Emails serão enviados pelo seu Gmail corporativo.');
+}
+function copyAppsScript(){
+  const ta=document.getElementById('as-code-preview');
+  ta.select(); document.execCommand('copy');
+  showToast('📋 Script copiado! Cole no Apps Script.');
+}
+document.getElementById('email-settings-mov').addEventListener('click',e=>{if(e.target===e.currentTarget)closeEmailSettings();});
+loadEmailCfg();
+
+/* ════════════════════════════════
+   ENVIO DE EMAIL (Google Apps Script)
+════════════════════════════════ */
+function buildResponseURL(token){
+  const base=window.location.href.split('?')[0];
+  return `${base}?token=${token}`;
+}
+
+function buildEmailHTML(action, contact){
+  const respUrl = buildResponseURL(action.token);
+  return `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto">
+  <div style="background:#3d6b4f;padding:18px 24px;border-radius:10px 10px 0 0">
+    <h2 style="color:#fff;margin:0;font-size:1.1rem">📋 Nova ação atribuída a você</h2>
+  </div>
+  <div style="background:#f9f9f7;padding:24px;border:1px solid #e0ddd6;border-top:none;border-radius:0 0 10px 10px">
+    <p style="margin:0 0 16px">Olá <strong>${contact.name}</strong>,</p>
+    <div style="background:#fff;border:1.5px solid #e0ddd6;border-radius:8px;padding:16px;margin-bottom:20px">
+      <p style="margin:0 0 6px;font-size:.8rem;color:#888;text-transform:uppercase;letter-spacing:.05em">Ação atribuída</p>
+      <p style="margin:0;font-size:1rem;font-weight:600">${action.text}</p>
+      <hr style="border:none;border-top:1px solid #e0ddd6;margin:12px 0">
+      <p style="margin:0;font-size:.85rem;color:#555">📅 Vencimento: <strong>${fmtD(action.due)||'Sem prazo definido'}</strong></p>
+    </div>
+    <a href="${respUrl}" style="display:inline-block;background:#3d6b4f;color:#fff;padding:13px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.95rem">
+      ✅ Responder / Marcar como Concluída
+    </a>
+    <p style="margin-top:20px;font-size:.73rem;color:#aaa">Enviado via Meu Caderno</p>
+  </div>
+</div>`;
+}
+
+async function sendActionEmail(action, contact){
+  const respUrl = buildResponseURL(action.token);
+
+  // Sem Apps Script configurado → abre mailto como fallback
+  if(!emailCfg.appsScriptUrl){
+    const sub=encodeURIComponent(`Ação para você: ${action.text}`);
+    const body=encodeURIComponent(`Olá ${contact.name},\n\nUma ação foi atribuída a você:\n\nAção: ${action.text}\nVencimento: ${fmtD(action.due)||'Sem prazo'}\n\nResponda em: ${respUrl}\n\nAtt, Meu Caderno`);
+    window.open(`mailto:${contact.email}?subject=${sub}&body=${body}`);
+    return 'mailto';
+  }
+
+  // Envia via Google Apps Script (email corporativo, sem OAuth externo)
+  try{
+    await fetch(emailCfg.appsScriptUrl, {
+      method: 'POST',
+      mode:   'no-cors',   // Apps Script redireciona, no-cors evita erro CORS
+      headers:{ 'Content-Type':'text/plain' },
+      body: JSON.stringify({
+        to:      contact.email,
+        subject: `Nova ação para você: ${action.text}`,
+        html:    buildEmailHTML(action, contact)
+      })
+    });
+    return 'sent';  // no-cors = não lemos resposta; assumimos sucesso se não houve erro de rede
+  } catch(err){
+    console.error('Apps Script email error:',err);
+    return 'error';
+  }
+}
+
+/* ════════════════════════════════
+   AÇÕES
+════════════════════════════════ */
+async function addAction(){
+  const te=document.getElementById('act-txt'),de=document.getElementById('act-due'),cs=document.getElementById('act-contact');
+  const txt=te.value.trim();if(!txt){te.focus();return;}
+  const contactId=cs.value?parseInt(cs.value):null;
+  const contact=contactId?contacts.find(c=>c.id===contactId):null;
+  const action={id:nxtA++,text:txt,due:de.value||null,created:today(),done:false,doneAt:null,
+    assignedTo: contact?{id:contact.id,name:contact.name,email:contact.email}:null,
+    token: contact?genToken():null,
+    emailStatus: null,
+    response: null
+  };
+  actionsData.push(action);
+  te.value='';de.value='';cs.value='';te.focus();
+  renderActions();fbSave();
+
+  if(contact){
+    showToast(`📧 Enviando email para ${contact.name}…`,2500);
+    const result=await sendActionEmail(action,contact);
+    if(result==='sent'){
+      action.emailStatus='sent';
+      showToast(`✅ Email enviado para ${contact.name}!`);
+      fbSave(); renderActions();
+    } else if(result==='mailto'){
+      action.emailStatus='mailto';
+      showToast(`📧 Abriu seu email com a mensagem pré-preenchida.`);
+      fbSave(); renderActions();
+    } else {
+      showToast(`⚠️ Falha ao enviar email. Verifique as configurações.`,4000);
     }
   }
 }
 
-/* ── AÇÕES ── */
-function addAction(){
-  const te=document.getElementById('act-txt'), de=document.getElementById('act-due');
-  const txt=te.value.trim(); if(!txt){ te.focus(); return; }
-  actionsData.push({id:nxtA++, text:txt, due:de.value||null, created:today(), done:false, doneAt:null});
-  te.value=''; de.value=''; te.focus(); renderActions(); fbSave();
+async function resendEmail(aId){
+  const a=actionsData.find(a=>a.id===aId);if(!a||!a.assignedTo)return;
+  if(!a.token) a.token=genToken();
+  showToast(`📧 Reenviando para ${a.assignedTo.name}…`,2000);
+  const result=await sendActionEmail(a,a.assignedTo);
+  if(result==='sent'){a.emailStatus='sent';showToast(`✅ Email reenviado para ${a.assignedTo.name}!`);fbSave();renderActions();}
+  else if(result==='mailto'){ showToast('📧 Abriu seu email.');fbSave();renderActions(); }
+  else showToast('⚠️ Falha ao reenviar. Verifique as configurações.',4000);
 }
-function togA(id){
-  const a=actionsData.find(a=>a.id===id); if(!a)return;
-  a.done=!a.done; a.doneAt=a.done?today():null;
-  renderActions(); fbSave();
-}
-function delA(id){
-  if(!confirm('Excluir esta ação?'))return;
-  actionsData=actionsData.filter(a=>a.id!==id);
-  renderActions(); fbSave();
-}
+
+function togA(id){ const a=actionsData.find(a=>a.id===id);if(!a)return;a.done=!a.done;a.doneAt=a.done?today():null;renderActions();fbSave(); }
+function delA(id){ if(!confirm('Excluir esta ação?'))return;actionsData=actionsData.filter(a=>a.id!==id);renderActions();fbSave(); }
 function startEditA(id){
-  if(editAId===id) return;
-  const a=actionsData.find(a=>a.id===id); if(!a||a.done)return;
-  editAId=id;
-  const wrap=document.getElementById('atxt-'+id); if(!wrap)return;
-  wrap.innerHTML=`<div class="aedit-wrap">
-    <input class="aedit-in" id="aedit-in-${id}" type="text" value="${esc(a.text)}"
-      onkeydown="if(event.key==='Enter')saveEditA(${id});if(event.key==='Escape')cancelEditA(${id})"/>
-    <button class="aedit-ok" onclick="saveEditA(${id})">Salvar</button>
-    <button class="aedit-cn" onclick="cancelEditA(${id})">Cancelar</button>
-  </div>`;
-  setTimeout(()=>{ const i=document.getElementById('aedit-in-'+id); if(i){i.focus();i.select();} },30);
+  if(editAId===id)return;const a=actionsData.find(a=>a.id===id);if(!a||a.done)return;editAId=id;
+  const wrap=document.getElementById('atxt-'+id);if(!wrap)return;
+  wrap.innerHTML=`<div class="aedit-wrap"><input class="aedit-in" id="aedit-in-${id}" type="text" value="${esc(a.text)}" onkeydown="if(event.key==='Enter')saveEditA(${id});if(event.key==='Escape')cancelEditA(${id})"/><button class="aedit-ok" onclick="saveEditA(${id})">Salvar</button><button class="aedit-cn" onclick="cancelEditA(${id})">Cancelar</button></div>`;
+  setTimeout(()=>{const i=document.getElementById('aedit-in-'+id);if(i){i.focus();i.select();}},30);
 }
-function saveEditA(id){
-  const inp=document.getElementById('aedit-in-'+id); if(!inp)return;
-  const txt=inp.value.trim(); if(!txt){ inp.focus(); return; }
-  const a=actionsData.find(a=>a.id===id); if(a) a.text=txt;
-  editAId=null; renderActions(); fbSave();
-}
-function cancelEditA(id){ editAId=null; renderActions(); }
-function dcls(due,done){ if(done||!due)return''; const t=today(); if(due<t)return'ov'; if(due===t)return'due'; return''; }
-function dlbl(due,done){
-  if(!due)return''; const c=dcls(due,done);
-  return`<span class="mb ${c}">${c==='ov'?'🔴':c==='due'?'🟠':'📅'} ${c==='ov'?'Vencida':'Vence'}: ${fmtD(due)}</span>`;
-}
+function saveEditA(id){ const inp=document.getElementById('aedit-in-'+id);if(!inp)return;const txt=inp.value.trim();if(!txt){inp.focus();return;}const a=actionsData.find(a=>a.id===id);if(a)a.text=txt;editAId=null;renderActions();fbSave(); }
+function cancelEditA(id){ editAId=null;renderActions(); }
+function dcls(due,done){ if(done||!due)return'';const t=today();if(due<t)return'ov';if(due===t)return'due';return''; }
+function dlbl(due,done){ if(!due)return'';const c=dcls(due,done);return`<span class="mb ${c}">${c==='ov'?'🔴':c==='due'?'🟠':'📅'} ${c==='ov'?'Vencida':'Vence'}: ${fmtD(due)}</span>`; }
+
 function aiH(a){
   const isEditing=editAId===a.id&&!a.done;
-  const txtBlock=isEditing
-    ?`<div id="atxt-${a.id}"></div>`
-    :`<div class="atxt" id="atxt-${a.id}" ${!a.done?`onclick="startEditA(${a.id})" title="Clique para editar"`:''}>${esc(a.text)}</div>`;
+  const txtBlock=isEditing?`<div id="atxt-${a.id}"></div>`:`<div class="atxt" id="atxt-${a.id}" ${!a.done?`onclick="startEditA(${a.id})" title="Clique para editar"`:''}>${esc(a.text)}</div>`;
+  // Badge do responsável
+  let badge='';
+  if(a.assignedTo){
+    const sentIcon = a.emailStatus==='sent'?'✅':a.emailStatus==='mailto'?'📤':'📧';
+    badge=`<span class="a-badge ${a.emailStatus==='sent'?'sent':''}">${sentIcon} ${esc(a.assignedTo.name)}</span>`;
+    if(!a.done){
+      badge+=`<button class="resend-btn" onclick="resendEmail(${a.id})" title="Reenviar email">↩ reenviar</button>`;
+    }
+  }
+  // Resposta do responsável
+  let respBlock='';
+  if(a.response){
+    if(a.response.comment){
+      respBlock+=`<div class="a-resp-box"><strong>💬 Comentário do responsável</strong>${esc(a.response.comment)}</div>`;
+    }
+    if(a.response.completedAt){
+      respBlock+=`<div class="a-resp-box" style="background:#eaf3ee;border-color:#c8e6d4;color:var(--acc)"><strong>✅ Concluída pelo responsável</strong>${fmtDT(a.response.completedAt)}</div>`;
+    }
+  }
   return`<div class="ai ${a.done?'done':''}">
     <div class="ack" onclick="togA(${a.id})">${a.done?'✓':''}</div>
-    <div class="acon">${txtBlock}
+    <div class="acon">
+      ${txtBlock}
       <div class="ameta">
         <span class="mb">🗓 ${fmtD(a.created)}</span>
         ${dlbl(a.due,a.done)}
         ${a.done&&a.doneAt?`<span class="mb dn">✔ ${fmtD(a.doneAt)}</span>`:''}
+        ${badge}
       </div>
+      ${respBlock}
     </div>
     <button class="adel" onclick="delA(${a.id})">✕</button>
   </div>`;
 }
+
 function renderActions(){
   const s=[...actionsData].sort((a,b)=>a.id-b.id);
-  const p=s.filter(a=>!a.done), d=s.filter(a=>a.done);
+  const p=s.filter(a=>!a.done),d=s.filter(a=>a.done);
   const bar=document.getElementById('sbar');
   if(actionsData.length){
     bar.style.display='flex';
     const ov=p.filter(a=>dcls(a.due,false)==='ov').length;
-    bar.innerHTML=`<div class="st">Total: <span>${actionsData.length}</span></div>
-      <div class="st">Pendentes: <span>${p.length}</span></div>
-      <div class="st">Concluídas: <span>${d.length}</span></div>
-      ${ov?`<div class="st" style="color:var(--red)">Vencidas: <span>${ov}</span></div>`:''}`;
+    bar.innerHTML=`<div class="st">Total: <span>${actionsData.length}</span></div><div class="st">Pendentes: <span>${p.length}</span></div><div class="st">Concluídas: <span>${d.length}</span></div>${ov?`<div class="st" style="color:var(--red)">Vencidas: <span>${ov}</span></div>`:''}`;
   } else bar.style.display='none';
-  document.getElementById('ap').innerHTML=p.length
-    ?`<div class="alist">${p.map(aiH).join('')}</div>`
-    :`<div class="empty"><div class="ei">✅</div><p>Nenhuma ação pendente!<br>Adicione uma acima.</p></div>`;
-  const ds=document.getElementById('ads'), de=document.getElementById('ad');
-  if(d.length){ ds.style.display='block'; de.innerHTML=`<div class="alist">${d.map(aiH).join('')}</div>`; }
+  document.getElementById('ap').innerHTML=p.length?`<div class="alist">${p.map(aiH).join('')}</div>`:`<div class="empty"><div class="ei">✅</div><p>Nenhuma ação pendente!<br>Adicione uma acima.</p></div>`;
+  const ds=document.getElementById('ads'),de=document.getElementById('ad');
+  if(d.length){ds.style.display='block';de.innerHTML=`<div class="alist">${d.map(aiH).join('')}</div>`;}
   else ds.style.display='none';
-  if(editAId!==null){ const wrap=document.getElementById('atxt-'+editAId); if(wrap)startEditA(editAId); }
+  if(editAId!==null){const wrap=document.getElementById('atxt-'+editAId);if(wrap)startEditA(editAId);}
+}
+
+/* ════════════════════════════════
+   MODO RESPOSTA (via link ?token=)
+════════════════════════════════ */
+let _respondingAction = null;
+
+function checkRespondToken(token){
+  const action=actionsData.find(a=>a.token===token);
+  if(!action){
+    showToast('⚠️ Ação não encontrada ou já removida.',5000);
+    return;
+  }
+  _respondingAction=action;
+  const card=document.getElementById('resp-card');
+  card.innerHTML=`
+    <h4>📋 ${esc(action.text)}</h4>
+    <div class="resp-meta">
+      <span>📅 Vencimento: <strong>${fmtD(action.due)||'Sem prazo'}</strong></span>
+      ${action.assignedTo?`<span>👤 Para: <strong>${esc(action.assignedTo.name)}</strong></span>`:''}
+    </div>
+    ${action.response?.comment?`<div style="margin-top:10px;font-size:.78rem;color:var(--mut)">Comentário anterior: ${esc(action.response.comment)}</div>`:''}`;
+  document.getElementById('resp-comment').value=action.response?.comment||'';
+  document.getElementById('respond-mov').classList.add('open');
+  // Limpa token da URL sem recarregar
+  history.replaceState({},'',window.location.pathname);
+}
+
+function submitComment(){
+  if(!_respondingAction)return;
+  const comment=document.getElementById('resp-comment').value.trim();
+  if(!comment){document.getElementById('resp-comment').focus();showToast('Escreva um comentário antes.');return;}
+  if(!_respondingAction.response) _respondingAction.response={};
+  _respondingAction.response.comment=comment;
+  document.getElementById('respond-mov').classList.remove('open');
+  fbSave(); renderActions();
+  showToast('💬 Comentário salvo com sucesso!');
+  _respondingAction=null;
+}
+
+function submitDone(){
+  if(!_respondingAction)return;
+  const comment=document.getElementById('resp-comment').value.trim();
+  if(!_respondingAction.response) _respondingAction.response={};
+  if(comment) _respondingAction.response.comment=comment;
+  _respondingAction.response.completedAt=nowISO();
+  _respondingAction.done=true;
+  _respondingAction.doneAt=today();
+  document.getElementById('respond-mov').classList.remove('open');
+  fbSave(); renderActions();
+  showToast('✅ Ação marcada como concluída! Obrigado.');
+  _respondingAction=null;
 }
 </script>
 </body>
