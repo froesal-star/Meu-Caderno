@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responder Ação</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f0eb;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.10);
+      width: 100%;
+      max-width: 480px;
+      padding: 32px 28px 28px;
+    }
+
+    .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: #3d6b4f;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 18px;
+    }
+    .logo-text { font-size: 15px; font-weight: 700; color: #333; }
+    .logo-sub  { font-size: 11px; color: #888; }
+
+    h2 { font-size: 17px; color: #3d6b4f; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+    .action-box {
+      background: #f8f5f1;
+      border: 1px solid #e5ddd4;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+    }
+    .action-title { font-size: 15px; font-weight: 600; color: #222; margin-bottom: 8px; }
+    .action-meta  { font-size: 12px; color: #666; display: flex; flex-wrap: wrap; gap: 10px; }
+    .meta-item    { display: flex; align-items: center; gap: 4px; }
+
+    label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .4px; }
+    label span { font-size: 11px; font-weight: 400; color: #888; text-transform: none; letter-spacing: 0; }
+
+    textarea {
+      width: 100%; min-height: 100px;
+      border: 1.5px solid #d0c8be; border-radius: 8px;
+      padding: 10px 12px; font-size: 14px; font-family: inherit;
+      resize: vertical; outline: none; transition: border-color .2s; color: #333;
+    }
+    textarea:focus { border-color: #3d6b4f; }
+
+    .buttons { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+
+    button {
+      flex: 1; min-width: 120px; padding: 11px 16px;
+      border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: opacity .15s, transform .1s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    button:active { transform: scale(.97); }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-comment { background: #fff; border: 1.5px solid #3d6b4f; color: #3d6b4f; }
+    .btn-done    { background: #3d6b4f; color: #fff; }
+
+    #state-loading, #state-error, #state-success, #state-already-done, #state-form { display: none; }
+
+    .state-center { text-align: center; padding: 16px 0; }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid #e0d9d1; border-top-color: #3d6b4f;
+      border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .state-icon  { font-size: 40px; margin-bottom: 12px; }
+    .state-title { font-size: 18px; font-weight: 700; color: #333; margin-bottom: 8px; }
+    .state-sub   { font-size: 14px; color: #666; }
+
+    .toast {
+      background: #d9534f; color: #fff; font-size: 13px;
+      padding: 8px 12px; border-radius: 6px; margin-top: 12px; display: none;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+
+  <div class="logo">
+    <div class="logo-icon">📓</div>
+    <div>
+      <div class="logo-text">Meu Caderno</div>
+      <div class="logo-sub">Resposta de ação</div>
+    </div>
+  </div>
+
+  <div id="state-loading" class="state-center">
+    <div class="spinner"></div>
+    <div class="state-sub">Carregando ação...</div>
+  </div>
+
+  <div id="state-error" class="state-center">
+    <div class="state-icon">⚠️</div>
+    <div class="state-title">Ação não encontrada</div>
+    <div class="state-sub" id="error-msg">O link pode ter expirado ou a ação foi removida.</div>
+  </div>
+
+  <div id="state-already-done" class="state-center">
+    <div class="state-icon">✅</div>
+    <div class="state-title">Ação já concluída</div>
+    <div id="already-done-msg" class="state-sub">Esta ação já foi marcada como concluída.</div>
+  </div>
+
+  <div id="state-form">
+    <h2>✅ Responder Ação</h2>
+    <div class="action-box">
+      <div class="action-title" id="action-text"></div>
+      <div class="action-meta">
+        <span class="meta-item">📅 Vencimento: <strong id="action-due"></strong></span>
+        <span class="meta-item">👤 Para: <strong id="action-assignee"></strong></span>
+      </div>
+    </div>
+    <label for="comment">Seu comentário <span>(o que foi feito)</span></label>
+    <textarea id="comment" placeholder="Descreva o que foi executado..."></textarea>
+    <div class="toast" id="toast-error">Escreva um comentário antes de enviar.</div>
+    <div class="buttons">
+      <button class="btn-comment" id="btn-comment" onclick="submitResponse(false)">💬 Só comentar</button>
+      <button class="btn-done"    id="btn-done"    onclick="submitResponse(true)">✅ Marcar como Concluída</button>
+    </div>
+  </div>
+
+  <div id="state-success" class="state-center">
+    <div class="state-icon"  id="success-icon">💬</div>
+    <div class="state-title" id="success-title">Comentário enviado!</div>
+    <div class="state-sub"   id="success-msg">Seu comentário foi registrado com sucesso.</div>
+  </div>
+
+</div>
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getDatabase, ref, query, orderByChild, equalTo, onValue, update }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+  function show(id) { document.getElementById(id).style.display = 'block'; }
+  function hide(id) { document.getElementById(id).style.display = 'none';  }
+  function setText(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = String(value ?? '');
+  }
+  function showState(name) {
+    ['loading','error','form','success','already-done'].forEach(s => hide('state-' + s));
+    show('state-' + name);
+  }
+
+  const TOKEN_PATTERN = /^[a-z0-9][a-z0-9\-]{6,38}[a-z0-9]$/;
+  const params = new URLSearchParams(window.location.search);
+  const token  = params.get('token') ?? '';
+
+  if (!TOKEN_PATTERN.test(token)) {
+    showState('error');
+    setText('error-msg', 'Link inválido. Verifique se você acessou o link correto do email.');
+    throw new Error('invalid token format');
+  }
+
+  showState('loading');
+
+  const firebaseConfig = {
+    apiKey:      'AIzaSyDB21rD8B3f_b2rLcIiulAqgrZIYdyPLvI',
+    authDomain:  'controle-de-custos-39c67.firebaseapp.com',
+    databaseURL: 'https://controle-de-custos-39c67-default-rtdb.firebaseio.com',
+    projectId:   'controle-de-custos-39c67'
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+
+  const actionsQuery = query(
+    ref(db, 'meuCaderno/actions'),
+    orderByChild('token'),
+    equalTo(token)
+  );
+
+  let currentActionId = null;
+
+  onValue(actionsQuery, (snapshot) => {
+    if (!snapshot.exists()) { showState('error'); return; }
+    const entries = Object.entries(snapshot.val());
+    if (!entries.length)    { showState('error'); return; }
+
+    const [actionId, action] = entries[0];
+    currentActionId = actionId;
+
+    if (action.done) {
+      const prev = action.response?.comment ?? '';
+      setText('already-done-msg', prev
+        ? 'Comentário registrado: "' + prev + '"'
+        : 'Esta ação já foi marcada como concluída.');
+      showState('already-done');
+      return;
+    }
+
+    setText('action-text',     action.text ?? '');
+    setText('action-due',      action.due  ?? '—');
+    setText('action-assignee', action.assignedTo?.name ?? '');
+    if (action.response?.comment) {
+      document.getElementById('comment').value = action.response.comment;
+    }
+    showState('form');
+  }, { onlyOnce: true });
+
+  window.submitResponse = async function(markDone) {
+    const commentEl = document.getElementById('comment');
+    const comment   = commentEl.value.trim();
+    const toastEl   = document.getElementById('toast-error');
+
+    if (!comment) {
+      toastEl.textContent = 'Escreva um comentário antes de enviar.';
+      toastEl.style.display = 'block';
+      commentEl.focus();
+      return;
+    }
+    toastEl.style.display = 'none';
+
+    document.getElementById('btn-comment').disabled = true;
+    document.getElementById('btn-done').disabled    = true;
+
+    const updates = {
+      'response/comment':     comment,
+      'response/respondedAt': new Date().toISOString()
+    };
+    if (markDone) {
+      updates.done   = true;
+      updates.doneAt = new Date().toISOString().split('T')[0];
+    }
+
+    try {
+      await update(ref(db, 'meuCaderno/actions/' + currentActionId), updates);
+      setText('success-icon',  markDone ? '✅' : '💬');
+      setText('success-title', markDone ? 'Ação concluída!' : 'Comentário enviado!');
+      setText('success-msg',   markDone
+        ? 'A ação foi marcada como concluída e seu comentário foi registrado.'
+        : 'Seu comentário foi registrado com sucesso.');
+      showState('success');
+    } catch (err) {
+      document.getElementById('btn-comment').disabled = false;
+      document.getElementById('btn-done').disabled    = false;
+      toastEl.textContent = 'Erro ao salvar. Tente novamente.';
+      toastEl.style.display = 'block';
+    }
+  };
+</script>
+</body>
+</html>
