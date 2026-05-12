@@ -406,28 +406,77 @@ textarea.nta:focus{border-color:var(--acc)}
   </div>
 </div>
 
-<!-- Modal configurações de email (Google Apps Script) -->
+<!-- Modal configurações de email (Google Form relay) -->
 <div class="mov" id="email-settings-mov">
   <div class="modal wide">
     <h3>⚙️ Configurar Envio de Emails</h3>
-    <div class="modal-note">
-      Usa o <strong>Google Apps Script</strong> com seu email corporativo — sem OAuth externo, 100% gratuito.<br><br>
-      <strong>Configure em 3 passos:</strong><br>
-      1. Acesse <a href="https://script.google.com" target="_blank">script.google.com</a> com seu email do Meli<br>
-      2. Clique em <strong>Novo projeto</strong> → apague o código e cole o script fornecido abaixo<br>
-      3. Clique em <strong>Implantar → Nova implantação</strong> → Tipo: <em>App da Web</em> → Executar como: <em>Eu</em> → Quem tem acesso: <em>Qualquer pessoa</em> → Copie a URL gerada<br><br>
-      <strong>Script a colar no Apps Script:</strong>
+
+    <!-- Step tabs -->
+    <div style="display:flex;gap:3px;margin-bottom:14px;background:var(--surf2);border-radius:8px;padding:3px;border:1px solid var(--brd)">
+      <button id="es-tab1" class="btn bp bsm" style="flex:1;border-radius:6px;font-size:.74rem" onclick="esTab(1)">1 · Criar Formulário</button>
+      <button id="es-tab2" class="btn bo bsm" style="flex:1;border-radius:6px;font-size:.74rem" onclick="esTab(2)">2 · Script</button>
+      <button id="es-tab3" class="btn bo bsm" style="flex:1;border-radius:6px;font-size:.74rem" onclick="esTab(3)">3 · Configurar</button>
     </div>
-    <textarea id="as-code-preview" rows="6" readonly
-      style="font-size:.72rem;font-family:monospace;background:#f8f8f8;border:1.5px solid var(--brd);border-radius:7px;padding:10px;width:100%;resize:none;margin-bottom:10px"
-      onclick="this.select()">function doPost(e){try{var d=JSON.parse(e.postData.contents);GmailApp.sendEmail(d.to,d.subject,'',{htmlBody:d.html,name:'Meu Caderno'});return ContentService.createTextOutput(JSON.stringify({status:'ok'})).setMimeType(ContentService.MimeType.JSON);}catch(err){return ContentService.createTextOutput(JSON.stringify({status:'error',message:err.toString()})).setMimeType(ContentService.MimeType.JSON);}}</textarea>
-    <button class="btn bo bsm" style="margin-bottom:12px" onclick="copyAppsScript()">📋 Copiar script</button>
-    <label style="font-size:.74rem;font-weight:600;color:var(--mut)">URL DA IMPLANTAÇÃO (cole aqui após implantar)</label>
-    <input type="text" id="es-url" placeholder="https://script.google.com/macros/s/…/exec"/>
-    <div class="mact">
-      <button class="btn bo" onclick="closeEmailSettings()">Cancelar</button>
-      <button class="btn bp" onclick="saveEmailSettings()">💾 Salvar</button>
+
+    <!-- STEP 1 -->
+    <div id="es-s1">
+      <div class="modal-note">
+        <strong>📋 Passo 1 — Criar o Formulário (a partir da planilha já criada)</strong><br><br>
+        1. Abra a planilha relay: <a href="https://docs.google.com/spreadsheets/d/1R_TWbxVFR8LhLTIfXBfrQngcIKVrKwzStuukZSKouMs/edit" target="_blank"><strong>Meu Caderno — Email Relay ↗</strong></a><br>
+        2. No menu superior clique em <strong>Ferramentas → Criar formulário</strong> — uma nova aba abrirá com o formulário vinculado<br>
+        3. Na pergunta padrão, mude o tipo de <em>Resposta curta</em> para <strong>Parágrafo</strong> e coloque o título <strong>dados</strong><br>
+        4. Clique em <strong>⋮</strong> (canto superior direito do form) → <strong>"Obter link pré-preenchido"</strong><br>
+        5. Digite qualquer texto → clique <strong>"Obter link"</strong><br>
+        6. Copie a URL gerada — extraia o número entre <code>entry.</code> e <code>=</code><br>
+        &nbsp;&nbsp; Exemplo: <code>…?<strong>entry.1234567890</strong>=texto…</code> → o ID é <strong>1234567890</strong>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:4px">
+        <button class="btn bp bsm" onclick="esTab(2)">Próximo →</button>
+      </div>
     </div>
+
+    <!-- STEP 2 -->
+    <div id="es-s2" style="display:none">
+      <div class="modal-note">
+        <strong>⚙️ Passo 2 — Adicionar o script na planilha relay</strong><br><br>
+        1. Volte para a planilha <a href="https://docs.google.com/spreadsheets/d/1R_TWbxVFR8LhLTIfXBfrQngcIKVrKwzStuukZSKouMs/edit" target="_blank"><strong>Meu Caderno — Email Relay ↗</strong></a><br>
+        2. Clique em <strong>Extensões → Apps Script</strong><br>
+        3. Apague tudo e cole o script abaixo → <strong>Ctrl+S</strong> para salvar<br>
+        4. Clique no ícone de relógio ⏱ (Acionadores) → <strong>"Adicionar acionador"</strong><br>
+        5. Configure: <em>Função:</em> <code>onFormSubmit</code> · <em>Origem:</em> Do Spreadsheet · <em>Tipo:</em> No envio do formulário<br>
+        6. Clique <strong>Salvar</strong> → autorize com seu email Meli quando solicitado
+      </div>
+      <textarea id="as-code-preview" rows="5" readonly
+        style="font-size:.72rem;font-family:monospace;background:#f8f8f8;border:1.5px solid var(--brd);border-radius:7px;padding:10px;width:100%;resize:none;margin-bottom:8px"
+        onclick="this.select()">function onFormSubmit(e){try{var vals=e.namedValues;var d=JSON.parse(vals['dados']?vals['dados'][0]:Object.values(vals)[0][0]);GmailApp.sendEmail(d.to,d.subject,'',{htmlBody:d.html,name:'Meu Caderno'});}catch(err){Logger.log('Erro: '+err.toString());}}</textarea>
+      <button class="btn bo bsm" style="margin-bottom:4px" onclick="copyAppsScript()">📋 Copiar script</button>
+      <div style="display:flex;justify-content:space-between;margin-top:8px">
+        <button class="btn bo bsm" onclick="esTab(1)">← Voltar</button>
+        <button class="btn bp bsm" onclick="esTab(3)">Próximo →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div id="es-s3" style="display:none">
+      <div class="modal-note">
+        <strong>🔗 Passo 3 — Conectar ao Meu Caderno</strong><br><br>
+        Cole a <strong>URL do formulário</strong> (aba que abriu no Passo 1 — ex: <code>…/forms/d/<strong>1BxiMV…</strong>/viewform</code>)<br>
+        e o <strong>ID do campo</strong> copiado no Passo 1 (apenas os números, ex: <code>1234567890</code>)
+      </div>
+      <label style="font-size:.74rem;font-weight:600;color:var(--mut)">URL DO FORMULÁRIO</label>
+      <input type="text" id="es-form-url" placeholder="https://docs.google.com/forms/d/…/viewform"/>
+      <label style="font-size:.74rem;font-weight:600;color:var(--mut)">ID DO CAMPO (só os números após entry.)</label>
+      <input type="text" id="es-entry-id" placeholder="Ex: 1234567890" style="margin-bottom:4px"/>
+      <div id="es-status" style="font-size:.76rem;color:var(--mut);margin-bottom:8px;min-height:18px"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+        <button class="btn bo bsm" onclick="esTab(2)">← Voltar</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn bo" onclick="closeEmailSettings()">Cancelar</button>
+          <button class="btn bp" onclick="saveEmailSettings()">💾 Salvar</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -755,36 +804,57 @@ function populateContactSelect(){
 }
 
 /* ════════════════════════════════
-   CONFIGURAÇÕES DE EMAIL (Google Apps Script)
+   CONFIGURAÇÕES DE EMAIL (Google Form relay)
 ════════════════════════════════ */
 let emailCfg = {};
 function loadEmailCfg(){
-  try{ emailCfg=JSON.parse(localStorage.getItem('caderno_email_cfg')||'{}'); }catch(e){emailCfg={};}
+  try{
+    const raw=JSON.parse(localStorage.getItem('caderno_email_cfg')||'{}');
+    // Migrar config antiga (appsScriptUrl) para novo formato
+    if(raw.appsScriptUrl && !raw.formId) emailCfg={};
+    else emailCfg=raw;
+  }catch(e){emailCfg={};}
 }
 function openEmailSettings(){
   loadEmailCfg();
-  document.getElementById('es-url').value=emailCfg.appsScriptUrl||'';
+  esTab(emailCfg.formId?3:1);
+  document.getElementById('es-form-url').value=emailCfg.formId?`https://docs.google.com/forms/d/${emailCfg.formId}/viewform`:'';
+  document.getElementById('es-entry-id').value=emailCfg.entryId||'';
+  document.getElementById('es-status').textContent=emailCfg.formId?'✅ Já configurado — você pode atualizar os dados abaixo.':'';
   document.getElementById('email-settings-mov').classList.add('open');
+}
+function esTab(n){
+  [1,2,3].forEach(i=>{
+    document.getElementById('es-s'+i).style.display=i===n?'block':'none';
+    const btn=document.getElementById('es-tab'+i);
+    btn.className=i===n?'btn bp bsm':'btn bo bsm';
+    btn.style.flex='1'; btn.style.borderRadius='6px'; btn.style.fontSize='.74rem';
+  });
 }
 function closeEmailSettings(){ document.getElementById('email-settings-mov').classList.remove('open'); }
 function saveEmailSettings(){
-  const url=document.getElementById('es-url').value.trim();
-  if(!url||!url.startsWith('https://')){showToast('Cole a URL da implantação do Apps Script.');return;}
-  emailCfg={appsScriptUrl:url};
+  const rawUrl=document.getElementById('es-form-url').value.trim();
+  const entryRaw=document.getElementById('es-entry-id').value.trim().replace(/^entry\./i,'');
+  const st=document.getElementById('es-status');
+  // Extrai o Form ID da URL
+  const m=rawUrl.match(/\/forms\/d\/([a-zA-Z0-9_-]+)/);
+  if(!m){st.textContent='⚠️ URL inválida. Cole a URL completa do formulário.';st.style.color='var(--red)';return;}
+  if(!entryRaw||!/^\d+$/.test(entryRaw)){st.textContent='⚠️ ID do campo inválido. Use apenas os números (ex: 1234567890).';st.style.color='var(--red)';return;}
+  emailCfg={formId:m[1],entryId:entryRaw};
   localStorage.setItem('caderno_email_cfg',JSON.stringify(emailCfg));
   closeEmailSettings();
-  showToast('✅ Email configurado! Emails serão enviados pelo seu Gmail corporativo.');
+  showToast('✅ Email configurado! Próxima ação delegada enviará email automático.');
 }
 function copyAppsScript(){
   const ta=document.getElementById('as-code-preview');
   ta.select(); document.execCommand('copy');
-  showToast('📋 Script copiado! Cole no Apps Script.');
+  showToast('📋 Script copiado! Cole no Apps Script da planilha.');
 }
 document.getElementById('email-settings-mov').addEventListener('click',e=>{if(e.target===e.currentTarget)closeEmailSettings();});
 loadEmailCfg();
 
 /* ════════════════════════════════
-   ENVIO DE EMAIL (Google Apps Script)
+   ENVIO DE EMAIL (Google Form relay)
 ════════════════════════════════ */
 function buildResponseURL(token){
   const base=window.location.href.split('?')[0];
@@ -795,7 +865,7 @@ function buildEmailHTML(action, contact){
   const respUrl = buildResponseURL(action.token);
   return `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto">
   <div style="background:#3d6b4f;padding:18px 24px;border-radius:10px 10px 0 0">
-    <h2 style="color:#fff;margin:0;font-size:1.1rem">📋 Nova ação atribuída a você</h2>
+    <h2 style="color:#fff;margin:0;font-size:1.1rem">&#x1F4CB; Nova ação atribuída a você</h2>
   </div>
   <div style="background:#f9f9f7;padding:24px;border:1px solid #e0ddd6;border-top:none;border-radius:0 0 10px 10px">
     <p style="margin:0 0 16px">Olá <strong>${contact.name}</strong>,</p>
@@ -803,10 +873,10 @@ function buildEmailHTML(action, contact){
       <p style="margin:0 0 6px;font-size:.8rem;color:#888;text-transform:uppercase;letter-spacing:.05em">Ação atribuída</p>
       <p style="margin:0;font-size:1rem;font-weight:600">${action.text}</p>
       <hr style="border:none;border-top:1px solid #e0ddd6;margin:12px 0">
-      <p style="margin:0;font-size:.85rem;color:#555">📅 Vencimento: <strong>${fmtD(action.due)||'Sem prazo definido'}</strong></p>
+      <p style="margin:0;font-size:.85rem;color:#555">&#x1F4C5; Vencimento: <strong>${fmtD(action.due)||'Sem prazo definido'}</strong></p>
     </div>
     <a href="${respUrl}" style="display:inline-block;background:#3d6b4f;color:#fff;padding:13px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.95rem">
-      ✅ Responder / Marcar como Concluída
+      &#x2705; Responder / Marcar como Concluída
     </a>
     <p style="margin-top:20px;font-size:.73rem;color:#aaa">Enviado via Meu Caderno</p>
   </div>
@@ -816,29 +886,33 @@ function buildEmailHTML(action, contact){
 async function sendActionEmail(action, contact){
   const respUrl = buildResponseURL(action.token);
 
-  // Sem Apps Script configurado → abre mailto como fallback
-  if(!emailCfg.appsScriptUrl){
+  // Sem Form configurado → abre mailto como fallback
+  if(!emailCfg.formId || !emailCfg.entryId){
     const sub=encodeURIComponent(`Ação para você: ${action.text}`);
     const body=encodeURIComponent(`Olá ${contact.name},\n\nUma ação foi atribuída a você:\n\nAção: ${action.text}\nVencimento: ${fmtD(action.due)||'Sem prazo'}\n\nResponda em: ${respUrl}\n\nAtt, Meu Caderno`);
     window.open(`mailto:${contact.email}?subject=${sub}&body=${body}`);
     return 'mailto';
   }
 
-  // Envia via Google Apps Script (email corporativo, sem OAuth externo)
+  // Envia via Google Form relay → Apps Script onFormSubmit → GmailApp.sendEmail
+  // Google Forms são acessíveis publicamente, sem restrição de org
   try{
-    await fetch(emailCfg.appsScriptUrl, {
-      method: 'POST',
-      mode:   'no-cors',   // Apps Script redireciona, no-cors evita erro CORS
-      headers:{ 'Content-Type':'text/plain' },
-      body: JSON.stringify({
-        to:      contact.email,
-        subject: `Nova ação para você: ${action.text}`,
-        html:    buildEmailHTML(action, contact)
-      })
+    const formUrl=`https://docs.google.com/forms/d/${emailCfg.formId}/formResponse`;
+    const payload=JSON.stringify({
+      to:      contact.email,
+      subject: `Nova ação para você: ${action.text}`,
+      html:    buildEmailHTML(action, contact)
     });
-    return 'sent';  // no-cors = não lemos resposta; assumimos sucesso se não houve erro de rede
-  } catch(err){
-    console.error('Apps Script email error:',err);
+    const params=new URLSearchParams();
+    params.append(`entry.${emailCfg.entryId}`, payload);
+    await fetch(formUrl, {
+      method: 'POST',
+      mode:   'no-cors',   // Google Forms redireciona após submit — no-cors ignora o redirect
+      body:   params
+    });
+    return 'sent';  // no-cors = resposta opaca; assumimos sucesso se não houve erro de rede
+  }catch(err){
+    console.error('Form relay email error:',err);
     return 'error';
   }
 }
