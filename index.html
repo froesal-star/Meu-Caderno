@@ -857,8 +857,8 @@ loadEmailCfg();
    ENVIO DE EMAIL (Google Form relay)
 ════════════════════════════════ */
 function buildResponseURL(token){
-  const base=window.location.href.split('?')[0];
-  return `${base}?token=${token}`;
+  const base=window.location.href.split('?')[0].replace(/[^/]+$/,'');
+  return `${base}responder.html?token=${token}`;
 }
 
 function buildEmailHTML(action, contact){
