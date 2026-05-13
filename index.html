@@ -861,7 +861,7 @@ function buildResponseURL(token){
   return `${base}responder.html?token=${token}`;
 }
 
-function (action, contact){
+function buildEmailHTML(action, contact){
   const respUrl = buildResponseURL(action.token);
   return `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto">
   <div style="background:#3d6b4f;padding:18px 24px;border-radius:10px 10px 0 0">
