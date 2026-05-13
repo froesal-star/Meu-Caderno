@@ -901,7 +901,7 @@ async function sendActionEmail(action, contact){
     const payload=JSON.stringify({
       to:        contact.email,
       subject:   `Nova ação para você: ${action.text}`,
-      html:      (action, contact),
+      html:      buildEmailHTML(action, contact),
       calendar: { titulo: action.text, emailAddr: contact.email, data: action.due||null, linkResponder: respUrl }
     });
     await fetch(webAppUrl, {
