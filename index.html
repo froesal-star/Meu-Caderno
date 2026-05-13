@@ -25,7 +25,7 @@
   window._caderno_ref = ref;
   window._caderno_set = set;
   window._caderno_on  = onValue;
-  window.dispatchEvent(new Event("caderno_fb_ready"));
+  setTimeout(()=>window.dispatchEvent(new Event("caderno_fb_ready")),0);
 </script>
 
 <!-- Sem dependências externas para email — usa Google Apps Script -->
