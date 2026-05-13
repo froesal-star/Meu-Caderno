@@ -897,7 +897,7 @@ async function sendActionEmail(action, contact){
   // Envia via Google Form relay → Apps Script onFormSubmit → GmailApp.sendEmail
   // Envio via Apps Script Web App → GmailApp.sendEmail
   try{
-    const webAppUrl='https://script.google.com/a/macros/mercadolivre.com/s/AKfycbzb16eArtFzrPHbPx6GyaYLDb13Cv142tn8J2PcZp55N14VvMRu-ewaMFDdisLv9QjM/exec';
+    const webAppUrl='https://script.google.com/a/macros/mercadolivre.com/s/AKfycbxgYtrCj-2LKuLN9btExB1zAilgeK4kQ3s4a5sJE0nvD969NpG9b3bFoNME-R2LHv7t/exec';
     const payload=JSON.stringify({
       to:        contact.email,
       subject:   `Nova ação para você: ${action.text}`,
