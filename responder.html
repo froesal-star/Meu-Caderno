@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Responder Ação</title>
+  <title>Responder AÃ§Ã£o</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -97,58 +97,58 @@
 <div class="card">
 
   <div class="logo">
-    <div class="logo-icon">📓</div>
+    <div class="logo-icon">ð</div>
     <div>
       <div class="logo-text">Meu Caderno</div>
-      <div class="logo-sub">Resposta de ação</div>
+      <div class="logo-sub">Resposta de aÃ§Ã£o</div>
     </div>
   </div>
 
   <div id="state-loading" class="state-center">
     <div class="spinner"></div>
-    <div class="state-sub">Carregando ação...</div>
+    <div class="state-sub">Carregando aÃ§Ã£o...</div>
   </div>
 
   <div id="state-error" class="state-center">
-    <div class="state-icon">⚠️</div>
-    <div class="state-title">Ação não encontrada</div>
-    <div class="state-sub" id="error-msg">O link pode ter expirado ou a ação foi removida.</div>
+    <div class="state-icon">â ï¸</div>
+    <div class="state-title">AÃ§Ã£o nÃ£o encontrada</div>
+    <div class="state-sub" id="error-msg">O link pode ter expirado ou a aÃ§Ã£o foi removida.</div>
   </div>
 
   <div id="state-already-done" class="state-center">
-    <div class="state-icon">✅</div>
-    <div class="state-title">Ação já concluída</div>
-    <div id="already-done-msg" class="state-sub">Esta ação já foi marcada como concluída.</div>
+    <div class="state-icon">â</div>
+    <div class="state-title">AÃ§Ã£o jÃ¡ concluÃ­da</div>
+    <div id="already-done-msg" class="state-sub">Esta aÃ§Ã£o jÃ¡ foi marcada como concluÃ­da.</div>
   </div>
 
   <div id="state-form">
-    <h2>✅ Responder Ação</h2>
+    <h2>â Responder AÃ§Ã£o</h2>
     <div class="action-box">
       <div class="action-title" id="action-text"></div>
       <div class="action-meta">
-        <span class="meta-item">📅 Vencimento: <strong id="action-due"></strong></span>
-        <span class="meta-item">👤 Para: <strong id="action-assignee"></strong></span>
+        <span class="meta-item">ð Vencimento: <strong id="action-due"></strong></span>
+        <span class="meta-item">ð¤ Para: <strong id="action-assignee"></strong></span>
       </div>
     </div>
-    <label for="comment">Seu comentário <span>(o que foi feito)</span></label>
+    <label for="comment">Seu comentÃ¡rio <span>(o que foi feito)</span></label>
     <textarea id="comment" placeholder="Descreva o que foi executado..."></textarea>
-    <div class="toast" id="toast-error">Escreva um comentário antes de enviar.</div>
+    <div class="toast" id="toast-error">Escreva um comentÃ¡rio antes de enviar.</div>
     <div class="buttons">
-      <button class="btn-comment" id="btn-comment" onclick="submitResponse(false)">💬 Só comentar</button>
-      <button class="btn-done"    id="btn-done"    onclick="submitResponse(true)">✅ Marcar como Concluída</button>
+      <button class="btn-comment" id="btn-comment" onclick="submitResponse(false)">ð¬ SÃ³ comentar</button>
+      <button class="btn-done"    id="btn-done"    onclick="submitResponse(true)">â Marcar como ConcluÃ­da</button>
     </div>
   </div>
 
   <div id="state-success" class="state-center">
-    <div class="state-icon"  id="success-icon">💬</div>
-    <div class="state-title" id="success-title">Comentário enviado!</div>
-    <div class="state-sub"   id="success-msg">Seu comentário foi registrado com sucesso.</div>
+    <div class="state-icon"  id="success-icon">ð¬</div>
+    <div class="state-title" id="success-title">ComentÃ¡rio enviado!</div>
+    <div class="state-sub"   id="success-msg">Seu comentÃ¡rio foi registrado com sucesso.</div>
   </div>
 
 </div>
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getDatabase, ref, query, orderByChild, equalTo, onValue, update }
+  import { getDatabase, ref, get, query, orderByChild, equalTo, onValue, update }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
   function show(id) { document.getElementById(id).style.display = 'block'; }
@@ -168,7 +168,7 @@
 
   if (!TOKEN_PATTERN.test(token)) {
     showState('error');
-    setText('error-msg', 'Link inválido. Verifique se você acessou o link correto do email.');
+    setText('error-msg', 'Link invÃ¡lido. Verifique se vocÃª acessou o link correto do email.');
     throw new Error('invalid token format');
   }
 
@@ -182,7 +182,9 @@
   };
 
   const app = initializeApp(firebaseConfig);
-  const db  = getDatabase(app);
+  let WEB_APP_URL = '';
+  const db = getDatabase(app);
+  get(ref(db, 'meuCaderno/config/webAppUrl')).then(s => { if (s.exists()) WEB_APP_URL = s.val(); }).catch(() => {});
 
   const actionsQuery = query(
     ref(db, 'meuCaderno/actions'),
@@ -191,6 +193,7 @@
   );
 
   let currentActionId = null;
+  let currentAction   = null;
 
   onValue(actionsQuery, (snapshot) => {
     if (!snapshot.exists()) { showState('error'); return; }
@@ -199,18 +202,19 @@
 
     const [actionId, action] = entries[0];
     currentActionId = actionId;
+    currentAction   = action;
 
     if (action.done) {
       const prev = action.response?.comment ?? '';
       setText('already-done-msg', prev
-        ? 'Comentário registrado: "' + prev + '"'
-        : 'Esta ação já foi marcada como concluída.');
+        ? 'ComentÃ¡rio registrado: "' + prev + '"'
+        : 'Esta aÃ§Ã£o jÃ¡ foi marcada como concluÃ­da.');
       showState('already-done');
       return;
     }
 
     setText('action-text',     action.text ?? '');
-    setText('action-due',      action.due  ?? '—');
+    setText('action-due',      action.due  ?? 'â');
     setText('action-assignee', action.assignedTo?.name ?? '');
     if (action.response?.comment) {
       document.getElementById('comment').value = action.response.comment;
@@ -224,7 +228,7 @@
     const toastEl   = document.getElementById('toast-error');
 
     if (!comment) {
-      toastEl.textContent = 'Escreva um comentário antes de enviar.';
+      toastEl.textContent = 'Escreva um comentÃ¡rio antes de enviar.';
       toastEl.style.display = 'block';
       commentEl.focus();
       return;
@@ -245,11 +249,14 @@
 
     try {
       await update(ref(db, 'meuCaderno/actions/' + currentActionId), updates);
-      setText('success-icon',  markDone ? '✅' : '💬');
-      setText('success-title', markDone ? 'Ação concluída!' : 'Comentário enviado!');
+      if (markDone && WEB_APP_URL && currentAction) {
+        fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'deleteCalendarEvent', titulo: currentAction.text ?? '', emailAddr: currentAction.assignedTo?.email ?? '', data: currentAction.due ?? null }) }).catch(() => {});
+      }
+      setText('success-icon',  markDone ? 'â' : 'ð¬');
+      setText('success-title', markDone ? 'AÃ§Ã£o concluÃ­da!' : 'ComentÃ¡rio enviado!');
       setText('success-msg',   markDone
-        ? 'A ação foi marcada como concluída e seu comentário foi registrado.'
-        : 'Seu comentário foi registrado com sucesso.');
+        ? 'A aÃ§Ã£o foi marcada como concluÃ­da e seu comentÃ¡rio foi registrado.'
+        : 'Seu comentÃ¡rio foi registrado com sucesso.');
       showState('success');
     } catch (err) {
       document.getElementById('btn-comment').disabled = false;
