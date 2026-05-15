@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Responder Ação</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-bohx; margin: 0; padding: 0; }
 
     body {
       font-family: Arial, sans-serif;
@@ -182,9 +182,9 @@
   };
 
   const app = initializeApp(firebaseConfig);
-  let WEB_APP_URL = '';
+  const WEB_APP_URL = 'https://script.google.com/a/macros/mercadolivre.com/s/AKfycbxgYtrCj-2LKuLN9btExB1zAilgeK4kQ3s4a5sJE0nvD969NpG9b3bFoNME-R2LHv7t/exec';
   const db = getDatabase(app);
-  get(ref(db, 'meuCaderno/config/webAppUrl')).then(s => { if (s.exists()) WEB_APP_URL = s.val(); }).catch(() => {});
+  
 
   const actionsQuery = query(
     ref(db, 'meuCaderno/actions'),
