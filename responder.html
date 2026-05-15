@@ -182,7 +182,7 @@
   };
 
   const app = initializeApp(firebaseConfig);
-  const WEB_APP_URL = 'https://script.google.com/a/macros/mercadolivre.com/s/AKfycbxgYtrCj-2LKuLN9btExB1zAilgeK4kQ3s4a5sJE0nvD969NpG9b3bFoNME-R2LHv7t/exec';
+  const WEB_APP_URL = 'https://script.google.com/a/macros/mercadolivre.com/s/AKfycbzQMvD010mtf9PxkvAY3B8xFrnVJyc7TB5msf-PqFakBw6xrUWv4zRrWO1xir7qjNCf/exec';
   const db = getDatabase(app);
   
 
@@ -250,7 +250,7 @@
     try {
       await update(ref(db, 'meuCaderno/actions/' + currentActionId), updates);
       if (markDone && WEB_APP_URL && currentAction) {
-        fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'deleteCalendarEvent', titulo: currentAction.text ?? '', emailAddr: currentAction.assignedTo?.email ?? '', data: currentAction.due ?? null }) }).catch(() => {});
+        fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ type: 'deleteCalendarEvent', titulo: currentAction.text ?? '', emailAddr: currentAction.assignedTo?.email ?? '', data: currentAction.due ?? null }) }).catch(() => {});
       }
       setText('success-icon',  markDone ? '✅' : '💬');
       setText('success-title', markDone ? 'Ação concluída!' : 'Comentário enviado!');
