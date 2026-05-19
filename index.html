@@ -897,7 +897,7 @@ async function sendActionEmail(action, contact){
   // Envia via Google Form relay → Apps Script onFormSubmit → GmailApp.sendEmail
   // Envio via Apps Script Web App → GmailApp.sendEmail
   try{
-    const webAppUrl='https://script.google.com/a/macros/mercadolivre.com/s/AKfycbxgYtrCj-2LKuLN9btExB1zAilgeK4kQ3s4a5sJE0nvD969NpG9b3bFoNME-R2LHv7t/exec';
+    const webAppUrl='https://script.google.com/a/macros/mercadolivre.com/s/AKfycbzQMvD010mtf9PxkvAY3B8xFrnVJyc7TB5msf-PqFakBw6xrUWv4zRrWO1xir7qjNCf/exec';
     const payload=JSON.stringify({
       to:        contact.email,
       subject:   `Nova ação para você: ${action.text}`,
@@ -963,7 +963,7 @@ async function resendEmail(aId){
   else showToast('⚠️ Falha ao reenviar. Verifique as configurações.',4000);
 }
 
-function togA(id){ const a=actionsData.find(a=>a.id===id);if(!a)return;a.done=!a.done;a.doneAt=a.done?today():null;renderActions();fbSave(); }
+function togA(id){ const a=actionsData.find(a=>a.id===id);if(!a)return;a.done=!a.done;a.doneAt=a.done?today():null;if(a.done&&a.text){const _u='https://script.google.com/a/macros/mercadolivre.com/s/AKfycbzQMvD010mtf9PxkvAY3B8xFrnVJyc7TB5msf-PqFakBw6xrUWv4zRrWO1xir7qjNCf/exec';fetch(_u,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({type:'deleteCalendarEvent',titulo:a.text,emailAddr:(a.assignedTo&&a.assignedTo.email)||'',data:a.due||null})}).catch(function(){});}renderActions();fbSave(); }
 function delA(id){ if(!confirm('Excluir esta ação?'))return;actionsData=actionsData.filter(a=>a.id!==id);renderActions();fbSave(); }
 function startEditA(id){
   if(editAId===id)return;const a=actionsData.find(a=>a.id===id);if(!a||a.done)return;editAId=id;
