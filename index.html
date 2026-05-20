@@ -8,7 +8,7 @@
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, onValue, set }
+  import { getDatabase, ref, onValue, set, update }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
   const firebaseConfig = {
     apiKey: "AIzaSyDB21rD8B3f_b2rLcIiulAqgrZIYdyPLvI",
@@ -23,7 +23,7 @@
   const db  = getDatabase(app);
   window._caderno_db  = db;
   window._caderno_ref = ref;
-  window._caderno_set = set;
+  window._caderno_set = set;    window._caderno_update = update;
   window._caderno_on  = onValue;
   setTimeout(()=>window.dispatchEvent(new Event("caderno_fb_ready")),0);
 </script>
@@ -570,7 +570,7 @@ function fbSave(){
   saveTimer=setTimeout(()=>{
     _writing=true; setSS('wait','Salvando…');
     const dbRef=window._caderno_ref(window._caderno_db,'meuCaderno');
-    window._caderno_set(dbRef,{folders,actions:actionsData,contacts})
+    window._caderno_update(dbRef,{folders,actions:actionsData,contacts})
       .then(()=>{ setSS('ok','Sincronizado'); setTimeout(()=>{_writing=false;},300); })
       .catch(()=>{ setSS('err','Erro ao salvar'); _writing=false; });
   },600);
